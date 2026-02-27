@@ -1,0 +1,25 @@
+{
+  "name": "srs-master",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Industrial SCADA Distributed Data Aggregation System — ISA-95 compliant Kafka backbone with Prisma v6 historian",
+  "workspaces": [
+    "packages/shared",
+    "packages/producer",
+    "packages/consumer"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:shared": "npm run build -w packages/shared",
+    "build:producer": "npm run build -w packages/producer",
+    "build:consumer": "npm run build -w packages/consumer",
+    "dev:producer": "npm run dev -w packages/producer",
+    "dev:consumer": "npm run dev -w packages/consumer",
+    "lint": "npm run lint --workspaces",
+    "clean": "npm run clean --workspaces"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "UNLICENSED"
+}

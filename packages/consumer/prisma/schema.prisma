@@ -1,0 +1,138 @@
+// =============================================================================
+// SRS Master — Prisma v6 Schema for SCADA Historian Database
+// =============================================================================
+//
+// This schema defines the central historian database for the SCADA system.
+// It models three core entity types following ISA-95 event categories:
+//
+//   1. Telemetry — Continuous process measurements (flow, pressure, temp)
+//   2. Event     — Discrete operational events (start/stop, mode changes)
+//   3. Alarm     — Process alarms with severity levels
+//
+// Design Decisions:
+//   - event_id (UUID) is the PRIMARY KEY for idempotent inserts
+//   - Separate tables per category for independent retention/partitioning
+//   - Composite indexes on (plant, timestamp) for site-based aggregation
+//   - Composite indexes on (tag, timestamp) for tag-based time-series queries
+//   - PostgreSQL-native types (Timestamptz, DoublePrecision) for precision
+//
+// Prisma v6 Features Used:
+//   - @id on eventId for deduplication via createMany({ skipDuplicates: true })
+//   - @map / @@map for snake_case database column naming
+//   - @db.Timestamptz for timezone-aware timestamps
+//   - @db.DoublePrecision for IEEE 754 floating point
+//   - @default(now()) for server-side insert timestamps
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Telemetry — Continuous process measurements from SCADA Level-2 nodes.
+/// Retention: 7 days in Kafka, persisted indefinitely in PostgreSQL.
+/// Expected volume: ~300 records/second across 100 nodes (3 tags × 1 Hz × 100 nodes).
+model Telemetry {
+  /// UUIDv4 — globally unique, deduplication key for idempotent inserts.
+  /// Maps to Kafka message header 'event-id'.
+  eventId String @id @map("event_id") @db.Uuid
+
+  /// ISO-8601 UTC timestamp of when the measurement was taken at the sensor.
+  /// NOT the time it was received — preserves original measurement time.
+  timestamp DateTime @map("timestamp") @db.Timestamptz
+
+  /// ISA-95 Site identifier — e.g., "PLANT01", "REFINERY_NORTH"
+  plant String @map("plant") @db.VarChar(64)
+
+  /// ISA-95 Area identifier — e.g., "AREA02", "DISTILLATION"
+  area String @map("area") @db.VarChar(64)
+
+  /// ISA-95 Work Unit identifier — e.g., "UNIT_05", "COMPRESSOR_A"
+  unitName String @map("unit_name") @db.VarChar(64)
+
+  /// Process variable tag name — e.g., "FLOW_RATE", "PRESSURE", "TEMPERATURE"
+  tag String @map("tag") @db.VarChar(128)
+
+  /// Numeric measurement value in engineering units.
+  /// Uses DoublePrecision for full IEEE 754 range (important for scientific data).
+  value Float @map("value") @db.DoublePrecision
+
+  /// Engineering unit of measurement — e.g., "m3/h", "bar", "°C"
+  unitOfMeasure String @map("unit_of_measure") @db.VarChar(32)
+
+  /// OPC-UA quality code: GOOD, BAD, UNCERTAIN, OOR (Out of Range)
+  quality String @map("quality") @db.VarChar(16)
+
+  /// Originating SCADA node ID (1–100) for traceability
+  nodeId Int @map("node_id")
+
+  /// Server-side insert timestamp for audit trail
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // -----------------------------------------------------------------------
+  // Indexes — Optimized for industrial historian query patterns
+  // -----------------------------------------------------------------------
+
+  /// Site-based time-series: "Show me all data from PLANT01 in the last hour"
+  @@index([plant, timestamp], name: "idx_telemetry_plant_ts")
+
+  /// Tag-based time-series: "Show me FLOW_RATE trend for the last 24 hours"
+  @@index([tag, timestamp], name: "idx_telemetry_tag_ts")
+
+  /// Node traceability: "Show me all data from Node 42"
+  @@index([nodeId, timestamp], name: "idx_telemetry_node_ts")
+
+  @@map("telemetry")
+}
+
+/// Event — Discrete operational events from SCADA Level-2 nodes.
+/// Examples: equipment start/stop, mode changes, setpoint modifications.
+/// Retention: 30 days in Kafka, persisted indefinitely in PostgreSQL.
+model Event {
+  eventId       String   @id @map("event_id") @db.Uuid
+  timestamp     DateTime @map("timestamp") @db.Timestamptz
+  plant         String   @map("plant") @db.VarChar(64)
+  area          String   @map("area") @db.VarChar(64)
+  unitName      String   @map("unit_name") @db.VarChar(64)
+  tag           String   @map("tag") @db.VarChar(128)
+  value         Float    @map("value") @db.DoublePrecision
+  unitOfMeasure String   @map("unit_of_measure") @db.VarChar(32)
+  quality       String   @map("quality") @db.VarChar(16)
+  nodeId        Int      @map("node_id")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([plant, timestamp], name: "idx_events_plant_ts")
+  @@index([tag, timestamp], name: "idx_events_tag_ts")
+  @@index([nodeId, timestamp], name: "idx_events_node_ts")
+
+  @@map("events")
+}
+
+/// Alarm — Process alarms from SCADA Level-2 nodes.
+/// Severity follows ISA-18.2: LOW, MEDIUM, HIGH, CRITICAL.
+/// Retention: 90 days in Kafka (regulatory compliance), indefinitely in PostgreSQL.
+model Alarm {
+  eventId       String   @id @map("event_id") @db.Uuid
+  timestamp     DateTime @map("timestamp") @db.Timestamptz
+  plant         String   @map("plant") @db.VarChar(64)
+  area          String   @map("area") @db.VarChar(64)
+  unitName      String   @map("unit_name") @db.VarChar(64)
+  tag           String   @map("tag") @db.VarChar(128)
+  value         Float    @map("value") @db.DoublePrecision
+  unitOfMeasure String   @map("unit_of_measure") @db.VarChar(32)
+  quality       String   @map("quality") @db.VarChar(16)
+  nodeId        Int      @map("node_id")
+  severity      String   @map("severity") @db.VarChar(16)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([plant, timestamp], name: "idx_alarms_plant_ts")
+  @@index([tag, timestamp], name: "idx_alarms_tag_ts")
+  @@index([severity, timestamp], name: "idx_alarms_severity_ts")
+  @@index([nodeId, timestamp], name: "idx_alarms_node_ts")
+
+  @@map("alarms")
+}

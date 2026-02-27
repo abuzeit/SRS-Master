@@ -1,0 +1,162 @@
+// =============================================================================
+// SRS Master — Producer Local Database Schema (Prisma v6)
+// =============================================================================
+//
+// Each remote SCADA node (Level-2) has its OWN local PostgreSQL database.
+// This schema defines the Outbox pattern tables for guaranteed event delivery.
+//
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  The Outbox Pattern solves the dual-write problem:               │
+// │                                                                    │
+// │  WITHOUT Outbox:                                                  │
+// │    1. Write to local DB     → succeeds                           │
+// │    2. Publish to Kafka      → FAILS (network issue)              │
+// │    Result: DB updated but event lost forever                      │
+// │                                                                    │
+// │  WITH Outbox:                                                     │
+// │    1. Write to local DB  }                                        │
+// │    2. Write to outbox    } → SAME TRANSACTION (atomic)           │
+// │    3. Dispatcher reads outbox → publishes to Kafka               │
+// │    4. On success → mark SENT                                      │
+// │    5. On failure → retry with backoff                             │
+// │    Result: Event is NEVER lost. At-least-once guaranteed.        │
+// └────────────────────────────────────────────────────────────────────┘
+//
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRODUCER_DATABASE_URL")
+}
+
+// =============================================================================
+// Outbox Events — The core of the transactional outbox pattern
+// =============================================================================
+//
+// Every SCADA event (telemetry, operational, alarm) is first written HERE
+// inside the same transaction as any local business state changes.
+//
+// A separate Outbox Dispatcher process then:
+//   1. SELECTs pending events (FOR UPDATE SKIP LOCKED)
+//   2. Locks them (status → IN_PROGRESS)
+//   3. Publishes to Kafka (waits for ACK)
+//   4. Marks as SENT (or retries on failure)
+//
+// Status Lifecycle:
+//   PENDING → IN_PROGRESS → SENT
+//                ↓
+//           (on failure)
+//                ↓
+//            PENDING (with retry_count++)
+//                ↓
+//           (after MAX_RETRIES)
+//                ↓
+//             FAILED (poison message — requires manual intervention)
+// =============================================================================
+
+model OutboxEvent {
+  /// UUIDv4 — globally unique event identifier.
+  /// Used for idempotency at the consumer side.
+  id String @id @default(uuid()) @db.Uuid
+
+  /// ISA-95 aggregate type — maps to event category.
+  /// Values: "telemetry", "event", "alarm"
+  aggregateType String @map("aggregate_type") @db.VarChar(64)
+
+  /// ISA-95 aggregate identifier — the asset + tag combination.
+  /// Format: "{plant}.{area}.{unit}.{tag}"
+  /// Used for ordering guarantees per aggregate.
+  aggregateId String @map("aggregate_id") @db.VarChar(256)
+
+  /// Specific event type within the category.
+  /// Examples: "FLOW_RATE", "HIGH_TEMP", "UNIT_START"
+  eventType String @map("event_type") @db.VarChar(128)
+
+  /// Full SCADA event envelope as JSON.
+  /// This is the exact payload that will be published to Kafka.
+  /// Immutable once written — never modified after creation.
+  payload Json @map("payload") @db.JsonB
+
+  /// Message headers as JSON.
+  /// Contains: correlationId, causationId, traceId, schemaVersion,
+  /// nodeId, topic, partitionKey, contentType.
+  headers Json @map("headers") @db.JsonB
+
+  /// Event lifecycle status.
+  ///   PENDING     — Awaiting dispatch
+  ///   IN_PROGRESS — Locked by dispatcher, being published
+  ///   SENT        — Successfully published and ACKed by Kafka
+  ///   FAILED      — Exceeded MAX_RETRIES (poison message)
+  status String @default("PENDING") @map("status") @db.VarChar(16)
+
+  /// Number of publish attempts.
+  /// Incremented on each failure. After MAX_RETRIES → FAILED.
+  retryCount Int @default(0) @map("retry_count")
+
+  /// Timestamp when the event was created (written to outbox).
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  /// Earliest time this event becomes eligible for dispatch.
+  /// Set to future timestamps for exponential backoff on retries.
+  availableAt DateTime @default(now()) @map("available_at") @db.Timestamptz
+
+  /// Identifier of the dispatcher instance that locked this event.
+  /// NULL when not locked. Used for crash recovery (stale lock detection).
+  lockedBy String? @map("locked_by") @db.VarChar(128)
+
+  /// Timestamp when the event was locked by a dispatcher.
+  /// Used with LOCK_TIMEOUT to detect crashed dispatchers.
+  lockedAt DateTime? @map("locked_at") @db.Timestamptz
+
+  /// Timestamp when the event was successfully sent to Kafka.
+  sentAt DateTime? @map("sent_at") @db.Timestamptz
+
+  // -------------------------------------------------------------------------
+  // Indexes — Optimized for the dispatcher's query pattern
+  // -------------------------------------------------------------------------
+
+  /// Primary dispatcher query: "Give me PENDING events that are available now"
+  /// This is the hot path — must be fast.
+  @@index([status, availableAt], name: "idx_outbox_status_available")
+
+  /// Crash recovery: "Find IN_PROGRESS events with stale locks"
+  @@index([status, lockedAt], name: "idx_outbox_status_locked")
+
+  /// Aggregate ordering: "Process events for this aggregate in order"
+  @@index([aggregateId, createdAt], name: "idx_outbox_aggregate_order")
+
+  /// Monitoring: "How old is the oldest pending event?"
+  @@index([createdAt], name: "idx_outbox_created")
+
+  @@map("outbox_events")
+}
+
+// =============================================================================
+// Local Telemetry Cache (Optional)
+// =============================================================================
+//
+// Stores the latest telemetry readings locally on each node.
+// This enables the node to serve recent data even if Kafka is unreachable.
+// In ISA-95 terms, this is the Level-2 local historian.
+// =============================================================================
+
+model LocalTelemetry {
+  id        String   @id @default(uuid()) @db.Uuid
+  timestamp DateTime @map("timestamp") @db.Timestamptz
+  plant     String   @map("plant") @db.VarChar(64)
+  area      String   @map("area") @db.VarChar(64)
+  unitName  String   @map("unit_name") @db.VarChar(64)
+  tag       String   @map("tag") @db.VarChar(128)
+  value     Float    @map("value") @db.DoublePrecision
+  unit      String   @map("unit") @db.VarChar(32)
+  quality   String   @map("quality") @db.VarChar(16)
+  nodeId    Int      @map("node_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([tag, timestamp], name: "idx_local_telemetry_tag_ts")
+  @@map("local_telemetry")
+}

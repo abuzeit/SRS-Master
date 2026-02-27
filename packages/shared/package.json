@@ -1,0 +1,21 @@
+{
+    "name": "@srs/shared",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Shared types, schemas, and configuration for SRS Master SCADA system",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "clean": "rm -rf dist *.tsbuildinfo",
+        "lint": "tsc --noEmit"
+    },
+    "dependencies": {
+        "zod": "^3.23.0",
+        "uuid": "^10.0.0"
+    },
+    "devDependencies": {
+        "@types/uuid": "^10.0.0",
+        "typescript": "^5.5.0"
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "@srs/consumer",
+    "version": "1.0.0",
+    "private": true,
+    "description": "SCADA Level-3 master aggregator — consumes Kafka and persists to PostgreSQL via Prisma v6",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "prisma generate && tsc",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "clean": "rm -rf dist *.tsbuildinfo",
+        "lint": "tsc --noEmit",
+        "db:generate": "prisma generate",
+        "db:migrate": "prisma migrate dev",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:push": "prisma db push",
+        "db:studio": "prisma studio",
+        "db:seed": "tsx prisma/seed.ts"
+    },
+    "dependencies": {
+        "@srs/shared": "*",
+        "@prisma/client": "^6.0.0",
+        "kafkajs": "^2.2.4",
+        "pino": "^9.0.0"
+    },
+    "devDependencies": {
+        "prisma": "^6.0.0",
+        "tsx": "^4.19.0",
+        "typescript": "^5.5.0"
+    }
+}

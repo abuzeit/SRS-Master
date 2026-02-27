@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# TLS certificates (generated, not committed)
+certs/
+*.pem
+*.jks
+*.p12
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+packages/consumer/prisma/migrations/**/migration_lock.toml
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
