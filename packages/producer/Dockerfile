@@ -71,8 +71,6 @@ COPY --from=build /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build /app/packages/shared/package.json ./packages/shared/
 COPY --from=build /app/packages/producer/dist ./packages/producer/dist
 COPY --from=build /app/packages/producer/package.json ./packages/producer/
-COPY --from=build /app/packages/producer/node_modules ./packages/producer/node_modules
-
 # Copy Prisma schema and migration files (needed for migrate deploy)
 COPY --from=build /app/packages/producer/prisma ./packages/producer/prisma
 

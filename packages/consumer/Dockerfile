@@ -58,8 +58,6 @@ COPY --from=builder --chown=node:node /app/packages/consumer/package.json ./pack
 COPY --from=builder --chown=node:node /app/packages/consumer/dist/ ./packages/consumer/dist/
 COPY --from=builder --chown=node:node /app/packages/consumer/prisma/ ./packages/consumer/prisma/
 COPY --from=builder --chown=node:node /app/node_modules/ ./node_modules/
-COPY --from=builder --chown=node:node /app/packages/shared/node_modules/ ./packages/shared/node_modules/
-COPY --from=builder --chown=node:node /app/packages/consumer/node_modules/ ./packages/consumer/node_modules/
 
 # Copy the entrypoint script
 COPY --chown=node:node packages/consumer/docker-entrypoint.sh /app/docker-entrypoint.sh
