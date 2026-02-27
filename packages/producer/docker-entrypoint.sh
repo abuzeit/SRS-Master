@@ -1,16 +1,10 @@
-#!/bin/bash
-# =============================================================================
-# SRS Master — Producer Docker Entrypoint
-# =============================================================================
-#
-# Runs Prisma migrations against the local PostgreSQL database before starting
-# the producer application. This ensures the outbox_events table exists.
-# =============================================================================
-
+#!/bin/sh
 set -e
 
 echo "Running Prisma migrations for producer local database..."
-./node_modules/.bin/prisma migrate deploy
+cd /app
+./node_modules/.bin/prisma migrate deploy --schema=packages/producer/prisma/schema.prisma
 
 echo "Starting producer..."
-exec node dist/index.js
+cd /app/packages/producer
+exec node /app/packages/producer/dist/index.js
