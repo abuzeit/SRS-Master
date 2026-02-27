@@ -2,7 +2,7 @@
 # SRS Master — Master Station Stack (Production Phase 2)
 # =============================================================================
 #
-# Deployed on the 2 Master Proxmox servers.
+# Deployed on the Master Proxmox servers (2 or 3).
 # Contains the central infrastructure that remote sites connect to:
 #
 #   - 3 Kafka brokers (KRaft mode) with EXTERNAL listeners
@@ -17,10 +17,24 @@
 #   cp .env.master .env
 #   docker compose -f docker-compose.master.yml up -d
 #
-# For HA (2 Proxmox servers):
-#   Server 1: kafka-1, kafka-2, consumer, postgres
-#   Server 2: kafka-3, consumer-2 (add in override file)
-#   Set KAFKA_CONTROLLER_QUORUM_VOTERS to reference both server IPs.
+# Deployment Options:
+#
+#   Option A — Single Server (testing):
+#     All services on one host. Set MASTER_HOST_IP to LAN IP.
+#
+#   Option B — 2 Proxmox Servers:
+#     Server 1: kafka-1, kafka-2, consumer, postgres
+#     Server 2: kafka-3, consumer-2
+#     Set KAFKA_CONTROLLER_QUORUM_VOTERS across both server IPs.
+#
+#   Option C — 3 Proxmox Servers (recommended):
+#     Server 1 (MASTER_IP_1): kafka-1, consumer, postgres
+#     Server 2 (MASTER_IP_2): kafka-2
+#     Server 3 (MASTER_IP_3): kafka-3
+#     One broker per host = best fault tolerance.
+#     Set KAFKA_CONTROLLER_QUORUM_VOTERS:
+#       "1@MASTER_IP_1:29093,2@MASTER_IP_2:29093,3@MASTER_IP_3:29093"
+#     Set KAFKA_ADVERTISED_LISTENERS per broker to its host IP.
 #
 # =============================================================================
 
