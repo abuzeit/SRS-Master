@@ -10,7 +10,7 @@
 set -e
 
 echo "Running Prisma migrations for producer local database..."
-npx prisma migrate deploy
+./node_modules/.bin/prisma migrate deploy
 
 echo "Starting producer..."
 exec node dist/index.js

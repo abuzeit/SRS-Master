@@ -9,8 +9,8 @@
 set -e
 
 echo "=== Running Prisma migrations ==="
-cd /app/packages/consumer
-npx prisma migrate deploy
+cd /app
+./node_modules/.bin/prisma migrate deploy --schema=packages/consumer/prisma/schema.prisma
 
 echo "=== Migrations complete, starting consumer ==="
 cd /app
