@@ -18,13 +18,14 @@
         "db:studio": "prisma studio"
     },
     "dependencies": {
-        "@srs/shared": "*",
         "@prisma/client": "^6.0.0",
+        "@srs/shared": "*",
         "kafkajs": "^2.2.4",
-        "uuid": "^10.0.0",
-        "pino": "^9.0.0"
+        "pino": "^9.0.0",
+        "uuid": "^10.0.0"
     },
     "devDependencies": {
+        "@types/node": "^25.3.2",
         "@types/uuid": "^10.0.0",
         "prisma": "^6.0.0",
         "tsx": "^4.19.0",

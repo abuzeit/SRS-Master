@@ -19,12 +19,13 @@
         "db:seed": "tsx prisma/seed.ts"
     },
     "dependencies": {
-        "@srs/shared": "*",
         "@prisma/client": "^6.0.0",
+        "@srs/shared": "*",
         "kafkajs": "^2.2.4",
         "pino": "^9.0.0"
     },
     "devDependencies": {
+        "@types/node": "^25.3.2",
         "prisma": "^6.0.0",
         "tsx": "^4.19.0",
         "typescript": "^5.5.0"
