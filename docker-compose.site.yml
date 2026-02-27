@@ -1,0 +1,112 @@
+# =============================================================================
+# SRS Master — Remote Site Stack (Production Phase 2)
+# =============================================================================
+#
+# Deployed on each remote SCADA Level-2 site.
+# Each site runs independently:
+#   - 1 Producer (generates telemetry/events/alarms, writes to outbox)
+#   - 1 Local PostgreSQL (transactional outbox database)
+#
+# The producer connects to the Master Station's Kafka cluster via
+# the KAFKA_BROKERS environment variable (set in .env).
+#
+# Setup:
+#   1. Copy .env.site.example to .env
+#   2. Set NODE_ID (unique per site, 1–100)
+#   3. Set PLANT_ID and AREA_ID for this site's ISA-95 location
+#   4. Set KAFKA_BROKERS to the Master Station IPs
+#   5. docker compose -f docker-compose.site.yml up -d
+#
+# Usage:
+#   docker compose -f docker-compose.site.yml up -d
+#   docker compose -f docker-compose.site.yml logs -f
+#   docker compose -f docker-compose.site.yml down
+#
+# =============================================================================
+
+services:
+
+  # ===========================================================================
+  # Local Outbox PostgreSQL — Transactional outbox storage
+  # ===========================================================================
+  outbox-postgres:
+    image: postgres:16-alpine
+    hostname: outbox-postgres
+    container_name: srs-site-${NODE_ID:-1}-outbox-pg
+    ports:
+      - "${OUTBOX_PG_PORT:-5433}:5432"
+    environment:
+      POSTGRES_DB: scada_outbox
+      POSTGRES_USER: producer
+      POSTGRES_PASSWORD: ${PRODUCER_DB_PASSWORD:-producer-db-secret}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - outbox-data:/var/lib/postgresql/data
+    networks:
+      - site-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U producer -d scada_outbox" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ===========================================================================
+  # Producer — SCADA Level-2 Node
+  # ===========================================================================
+  producer:
+    build:
+      context: .
+      dockerfile: packages/producer/Dockerfile
+    container_name: srs-site-${NODE_ID:-1}-producer
+    depends_on:
+      outbox-postgres:
+        condition: service_healthy
+    environment:
+      # --- Site Identity (MUST be unique per site) ---
+      NODE_ID: ${NODE_ID:-1}
+      PLANT_ID: ${PLANT_ID:-PLANT01}
+      AREA_ID: ${AREA_ID:-AREA01}
+
+      # --- Kafka (Master Station) ---
+      KAFKA_BROKERS: ${KAFKA_BROKERS:-localhost:9092}
+      KAFKA_CLIENT_ID: scada-producer-${NODE_ID:-1}
+      PRODUCER_INTERVAL_MS: ${PRODUCER_INTERVAL_MS:-1000}
+
+      # --- Local Outbox Database ---
+      PRODUCER_DATABASE_URL: postgresql://producer:${PRODUCER_DB_PASSWORD:-producer-db-secret}@outbox-postgres:5432/scada_outbox?schema=public
+
+      # --- Outbox Dispatcher Tuning ---
+      OUTBOX_BATCH_SIZE: ${OUTBOX_BATCH_SIZE:-50}
+      OUTBOX_POLL_INTERVAL_MS: ${OUTBOX_POLL_INTERVAL_MS:-500}
+      OUTBOX_MAX_RETRIES: ${OUTBOX_MAX_RETRIES:-10}
+      OUTBOX_LOCK_TIMEOUT_SECONDS: ${OUTBOX_LOCK_TIMEOUT_SECONDS:-120}
+      OUTBOX_RECOVERY_INTERVAL_MS: ${OUTBOX_RECOVERY_INTERVAL_MS:-30000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # --- TLS/SASL (uncomment for production) ---
+      # KAFKA_SASL_USERNAME: ${KAFKA_SASL_USERNAME}
+      # KAFKA_SASL_PASSWORD: ${KAFKA_SASL_PASSWORD}
+      # KAFKA_SSL_CA_PATH: /certs/ca-cert.pem
+      # KAFKA_SSL_CERT_PATH: /certs/producer-cert.pem
+      # KAFKA_SSL_KEY_PATH: /certs/producer-key.pem
+      # volumes:
+      #   - ./certs:/certs:ro  # Uncomment for TLS
+    networks:
+      - site-network
+    restart: unless-stopped
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  outbox-data:
+    name: srs-site-${NODE_ID:-1}-outbox-data
+
+# =============================================================================
+# Network
+# =============================================================================
+networks:
+  site-network:
+    name: srs-site-${NODE_ID:-1}-network
+    driver: bridge
