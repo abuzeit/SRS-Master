@@ -141,7 +141,7 @@ SRS Master/
 │   │   └── src/
 │   │       ├── kafka/          # KafkaJS client factory + idempotent producer
 │   │       ├── generators/     # Telemetry, event, alarm data generators
-│   │       ├── outbox/         # OutboxService + OutboxDispatcher
+│   │       ├── outbox/         # OutboxService + OutboxDispatcher + OutboxPruner
 │   │       └── db/             # PrismaClient singleton
 │   └── consumer/               # Master station (Level-3)
 │       ├── prisma/             # Historian DB schema (Telemetry, Event, Alarm)
@@ -356,6 +356,10 @@ Every 1 second:
 
 The main loop **never touches Kafka directly**. All events flow through the outbox.
 
+**Background services started alongside the main loop:**
+- **OutboxDispatcher** — Publishes PENDING outbox events to Kafka (see §4.3.2)
+- **OutboxPruner** — Deletes old SENT events and local telemetry (see §4.3.3)
+
 ---
 
 ### 4.3 Transactional Outbox Pattern
@@ -535,20 +539,62 @@ Failed events:
                   ▼                                          │
  ┌─────────┐  dispatch  ┌──────────────┐  Kafka ACK  ┌──────┴──┐
  │ PENDING │──────────→│ IN_PROGRESS  │────────────→│  SENT   │
- └────┬────┘            └──────┬───────┘              └─────────┘
-      │                        │
-      │    retry < MAX         │  publish fails
-      │◄───────────────────────┘
-      │  (retry_count++,
-      │   available_at += backoff)
-      │
-      │    retry >= MAX
-      │
+ └────┬────┘            └──────┬───────┘              └────┬────┘
+      │                        │                           │
+      │    retry < MAX         │  publish fails   pruner   │ (after N days)
+      │◄───────────────────────┘                           │
+      │  (retry_count++,                                   ▼
+      │   available_at += backoff)                    ┌──────────┐
+      │                                               │ DELETED  │
+      │    retry >= MAX                               │ (pruned) │
+      │                                               └──────────┘
       ▼
  ┌────────┐
  │ FAILED │  (poison message — manual intervention)
  └────────┘
 ```
+
+#### 4.3.3 OutboxPruner (`outbox/pruner.ts`)
+
+The pruner is a **background maintenance service** that prevents the local outbox database from growing indefinitely. It runs as a periodic task alongside the dispatcher.
+
+**Problem:** Without pruning, the `outbox_events` table grows forever. On a node producing ~11,000 events/hour, the table would accumulate ~264,000 rows/day. After 30 days, that's ~8 million rows of SENT events that have already been successfully published to Kafka and are no longer needed.
+
+**What it deletes:**
+
+| Table | Condition | Rationale |
+|---|---|---|
+| `outbox_events` | `status = 'SENT'` AND `sent_at < cutoff` | Successfully published — safe to remove |
+| `local_telemetry` | `timestamp < cutoff` | Old cached readings — central historian has them |
+
+**Data safety:** Only `SENT` events are pruned. Events with status `PENDING`, `IN_PROGRESS`, or `FAILED` are **never touched**, ensuring no data loss.
+
+**Configuration (environment-tunable):**
+
+| Parameter | Default | Purpose |
+|---|---|---|
+| `STORAGE_RETENTION_DAYS` | 30 | Days to keep SENT events and local telemetry |
+| `PRUNE_INTERVAL_MS` | 3600000 (1h) | How often the pruning task runs |
+
+**Lifecycle:**
+
+1. **Startup:** Starts with the producer. Runs an initial prune after a 5-second delay (avoids contention with startup migrations).
+2. **Steady state:** Runs every `PRUNE_INTERVAL_MS` milliseconds. Each cycle calculates a cutoff date (`NOW() - RETENTION_DAYS`) and deletes eligible rows.
+3. **Shutdown:** Gracefully stopped during `SIGTERM`/`SIGINT` handling, before the dispatcher and Kafka producer.
+
+**Pruning query (per cycle):**
+
+```sql
+-- 1. Remove successfully dispatched outbox events
+DELETE FROM outbox_events
+WHERE status = 'SENT' AND sent_at < NOW() - INTERVAL '30 days';
+
+-- 2. Remove old local telemetry cache
+DELETE FROM local_telemetry
+WHERE timestamp < NOW() - INTERVAL '30 days';
+```
+
+**Logging:** Each pruning cycle logs the count of deleted records at `info` level. Zero-deletion cycles log at `debug` level to avoid log noise.
 
 ---
 
@@ -657,8 +703,8 @@ This guarantees that all `FLOW_RATE` readings from `PLANT01.AREA02.UNIT_05` alwa
 
 | Table | Purpose | Row Lifecycle |
 |---|---|---|
-| `outbox_events` | Pending Kafka publications | PENDING → IN_PROGRESS → SENT / FAILED |
-| `local_telemetry` | Local telemetry cache | Insert-only (most recent readings) |
+| `outbox_events` | Pending Kafka publications | PENDING → IN_PROGRESS → SENT / FAILED → (pruned after N days) |
+| `local_telemetry` | Local telemetry cache | Insert-only → (pruned after N days) |
 
 **Outbox indexes (optimized for dispatcher queries):**
 
@@ -960,7 +1006,7 @@ Named loggers per component: `kafka-client`, `scada-producer`, `outbox-service`,
 
 ### Medium-Term
 
-4. **Outbox cleanup job**: Scheduled deletion of SENT events older than N days to prevent unbounded table growth. Candidates: PostgreSQL cron extension (`pg_cron`) or application-level periodic task.
+4. ~~**Outbox cleanup job**~~: ✅ **Implemented** — The `OutboxPruner` (§4.3.3) automatically deletes SENT events and old local telemetry older than `STORAGE_RETENTION_DAYS` (default: 30 days). Runs every `PRUNE_INTERVAL_MS` (default: 1 hour).
 5. **Batch Kafka publishing**: Modify the dispatcher to send multiple messages in a single `producer.send()` call, reducing Kafka round-trips by up to 50x.
 6. **TimescaleDB migration**: Convert historian tables to TimescaleDB hypertables for native time-series compression and continuous aggregates.
 

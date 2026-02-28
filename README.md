@@ -142,15 +142,16 @@ SRS Master/
 │   │       ├── index.ts                  # Entry point — outbox-based event loop
 │   │       ├── kafka/
 │   │       │   ├── client.ts             # KafkaJS client factory (TLS + SASL)
-│   │       │   └── producer.ts           # Producer wrapper (acks=all, idempotent)
+│   │       │   └── producer.ts           # Idempotent producer wrapper
 │   │       ├── generators/
-│   │       │   ├── telemetry.ts          # Flow, pressure, temperature simulation
-│   │       │   ├── events.ts             # Operational events (start/stop, modes)
-│   │       │   └── alarms.ts             # ISA-18.2 alarm generation
+│   │       │   ├── telemetry.ts          # Gaussian random walk simulator
+│   │       │   ├── events.ts             # Operational event generator
+│   │       │   └── alarms.ts             # ISA-18.2 alarm generator
 │   │       ├── outbox/
 │   │       │   ├── index.ts              # Outbox barrel export
-│   │       │   ├── service.ts            # Atomic TX writer (business + outbox)
-│   │       │   └── dispatcher.ts         # SKIP LOCKED publisher + crash recovery
+│   │       │   ├── service.ts            # Atomic event writer (outbox pattern)
+│   │       │   ├── dispatcher.ts         # Outbox → Kafka publisher
+│   │       │   └── pruner.ts             # Background cleanup of SENT events
 │   │       └── db/
 │   │           └── prisma.ts             # Producer PrismaClient singleton
 │   │
@@ -335,13 +336,15 @@ Alarm definitions with stochastic probabilities:
 2. Test local PostgreSQL connection (fail fast)
 3. Create Kafka client with TLS + SASL, connect producer
 4. Initialize OutboxService and OutboxDispatcher
-5. Enter main loop (runs every `PRODUCER_INTERVAL_MS`, default 1 second):
+5. Initialize and start **OutboxPruner** (background maintenance)
+6. Enter main loop (runs every `PRODUCER_INTERVAL_MS`, default 1 second):
    - Generate telemetry, events, and alarms
    - Write ALL events to **local outbox** (NOT directly to Kafka)
    - The dispatcher independently publishes to Kafka in the background
-6. Log status every 60 cycles with outbox metrics (pending, failed, oldest age)
-7. Alert if pending count > 100 or failed count > 0
-8. Handle `SIGTERM`/`SIGINT` for graceful shutdown (dispatcher → producer → DB)
+   - The pruner independently cleans old SENT records in the background
+7. Log status every 60 cycles with outbox metrics (pending, failed, oldest age)
+8. Alert if pending count > 100 or failed count > 0
+9. Handle `SIGTERM`/`SIGINT` for graceful shutdown (pruner → dispatcher → producer → DB)
 
 ---
 
@@ -442,6 +445,29 @@ PENDING → IN_PROGRESS → SENT
 - `(status, available_at)` — Hot path: dispatcher's main query
 - `(status, locked_at)` — Crash recovery: find stale locks
 - `(aggregate_id, created_at)` — Ordering per aggregate
+
+#### `outbox/pruner.ts` — Background Cleanup Service
+
+**What it does:** Automatically deletes old, successfully published records from the local outbox database to prevent unbounded table growth.
+
+**What it cleans:**
+| Table | Condition | Safe? |
+|-------|-----------|-------|
+| `outbox_events` | `status = 'SENT'` AND `sent_at` older than retention | ✅ Already in Kafka + historian |
+| `local_telemetry` | `timestamp` older than retention | ✅ Central historian has the data |
+
+**Never touches:** PENDING, IN_PROGRESS, or FAILED events — only SENT.
+
+**Configuration:**
+| Variable | Default | Purpose |
+|----------|---------|---------|  
+| `STORAGE_RETENTION_DAYS` | 30 | Days to keep SENT events |
+| `PRUNE_INTERVAL_MS` | 3600000 | Cleanup interval (default: 1 hour) |
+
+**Lifecycle:**
+1. Starts with the producer, runs initial prune after 5s delay
+2. Prunes every `PRUNE_INTERVAL_MS` thereafter
+3. Stops gracefully on `SIGTERM`/`SIGINT`
 
 ---
 
@@ -910,6 +936,28 @@ FROM pg_tables WHERE schemaname = 'public';
 VACUUM ANALYZE telemetry;
 VACUUM ANALYZE events;
 VACUUM ANALYZE alarms;
+```
+
+### Outbox Pruning (Automatic)
+
+The producer includes an automatic pruning service that keeps the local outbox database from growing indefinitely.
+
+```bash
+# View pruning configuration
+docker compose exec producer env | grep -E 'STORAGE_RETENTION|PRUNE_INTERVAL'
+
+# Check pruning logs
+docker compose logs producer | grep pruner
+
+# Override retention for testing (keep only 1 day, prune every 10 minutes)
+# In .env:
+#   STORAGE_RETENTION_DAYS=1
+#   PRUNE_INTERVAL_MS=600000
+
+# Check outbox table size
+docker compose exec producer-postgres psql -U producer -d scada_outbox -c "
+  SELECT status, count(*) FROM outbox_events GROUP BY status;
+"
 ```
 
 ---
