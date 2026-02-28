@@ -41,6 +41,7 @@ import { generateEvents } from './generators/events.js';
 import { generateAlarms } from './generators/alarms.js';
 import { OutboxService } from './outbox/service.js';
 import { OutboxDispatcher } from './outbox/dispatcher.js';
+import { OutboxPruner } from './outbox/pruner.js';
 import { testConnection, disconnectPrisma } from './db/prisma.js';
 import pino from 'pino';
 
@@ -89,12 +90,20 @@ async function main(): Promise<void> {
     await dispatcher.start();
     logger.info('Outbox dispatcher started');
 
+    const pruner = new OutboxPruner();
+    await pruner.start();
+    logger.info('Outbox pruner started');
+
     // -----------------------------------------------------------------------
     // Step 4: Graceful shutdown handlers
     // -----------------------------------------------------------------------
     const shutdown = async (signal: string): Promise<void> => {
         logger.info({ signal }, 'Shutdown signal received');
         running = false;
+
+        // Stop pruner
+        await pruner.stop();
+        logger.info('Outbox pruner stopped');
 
         // Stop reading new events
         await dispatcher.stop();
