@@ -286,7 +286,7 @@ services:
     restart: unless-stopped
 
   # ===========================================================================
-  # REMOTE SITE 2 — Producer Node 2 (PLANT01 / AREA02)
+  # REMOTE SITE 2 — Producer Node 2 (PLANT02 / AREA01)
   # ===========================================================================
 
   outbox-pg-2:
@@ -324,8 +324,8 @@ services:
         condition: service_healthy
     environment:
       NODE_ID: 2
-      PLANT_ID: PLANT01
-      AREA_ID: AREA02
+      PLANT_ID: PLANT02
+      AREA_ID: AREA01
       KAFKA_BROKERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
       KAFKA_CLIENT_ID: scada-producer-02
       PRODUCER_INTERVAL_MS: 1000
@@ -341,7 +341,7 @@ services:
     restart: unless-stopped
 
   # ===========================================================================
-  # REMOTE SITE 3 — Producer Node 3 (PLANT02 / AREA01)
+  # REMOTE SITE 3 — Producer Node 3 (PLANT03 / AREA01)
   # ===========================================================================
 
   outbox-pg-3:
@@ -379,7 +379,7 @@ services:
         condition: service_healthy
     environment:
       NODE_ID: 3
-      PLANT_ID: PLANT02
+      PLANT_ID: PLANT03
       AREA_ID: AREA01
       KAFKA_BROKERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
       KAFKA_CLIENT_ID: scada-producer-03
