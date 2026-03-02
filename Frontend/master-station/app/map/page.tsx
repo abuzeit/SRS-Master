@@ -24,13 +24,6 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 
-const stationData = [
-    { id: "SRS-01", name: "Ghayathi", lat: 24.2097, lng: 53.7626, status: "healthy", ph: 7.23, conductivity: 1404, discharge: 19.77 },
-    { id: "SRS-05", name: "Al Ain Central", lat: 24.2075, lng: 55.7447, status: "healthy", ph: 7.1, conductivity: 1350, discharge: 22.5 },
-    { id: "SRS-11", name: "Shahama", lat: 24.4691, lng: 54.6197, status: "healthy", ph: 7.05, conductivity: 1420, discharge: 18.2 },
-    { id: "SRS-14", name: "Ruwais", lat: 24.1108, lng: 52.8867, status: "alarm", alarmType: "AC Failure", ph: 8.01, conductivity: 1550, discharge: 0 },
-    { id: "SRS-22", name: "Mirfa", lat: 24.6278, lng: 53.4158, status: "alarm", alarmType: "High PH", ph: 9.2, conductivity: 1600, discharge: 12 },
-]
 
 const MapWithNoSSR = dynamic(() => import("@/components/MapComponent"), {
     ssr: false,
@@ -87,6 +80,7 @@ export default function MapPage() {
                                 <thead className="uppercase tracking-wider border-b border-zinc-800 bg-zinc-900/50 text-[10px] font-semibold text-muted-foreground sticky top-0 backdrop-blur-sm z-10">
                                     <tr>
                                         <th className="px-6 py-1.5 font-medium border-r border-zinc-800/50 whitespace-nowrap" scope="col">Time</th>
+                                        <th className="px-6 py-1.5 font-medium border-r border-zinc-800/50" scope="col">Station ID</th>
                                         <th className="px-6 py-1.5 font-medium border-r border-zinc-800/50" scope="col">Status</th>
                                         <th className="px-6 py-1.5 font-medium border-r border-zinc-800/50" scope="col">Alarm Class</th>
                                         <th className="px-6 py-1.5 font-medium border-r border-zinc-800/50" scope="col">Alarm</th>
@@ -98,6 +92,7 @@ export default function MapPage() {
                                     {liveAlarms.map((alarm, idx) => (
                                         <tr key={alarm.id || idx} className="bg-zinc-900/20 text-zinc-300 hover:bg-zinc-800/50 transition-colors">
                                             <td className="px-6 py-1.5 text-xs font-mono text-zinc-400 whitespace-nowrap">{alarm.time}</td>
+                                            <td className="px-6 py-1.5 text-xs font-bold text-blue-500 whitespace-nowrap">{alarm.stationId || "N/A"}</td>
                                             <td className="px-6 py-1.5 text-xs font-medium">
                                                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold shadow-sm ${alarm.status === 'ACTIVE'
                                                     ? 'bg-rose-500 text-white shadow-rose-900/20'

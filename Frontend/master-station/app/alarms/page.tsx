@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import mockData from "@/data/mockData.json"
 
 import {
     Sheet,
@@ -48,19 +49,139 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-const STATIONS = [
-    { value: "srs-01", label: "SRS-01 Ghayathi" },
-    { value: "srs-02", label: "SRS-02 Ruwais" },
-    { value: "srs-03", label: "SRS-03 Madinat Zayed" },
-    { value: "srs-04", label: "SRS-04 Liwa" },
-    { value: "srs-05", label: "SRS-05 Mirfa" },
-    { value: "srs-06", label: "SRS-06 Sila" },
-]
+const STATIONS = mockData.stations.map(s => ({
+    value: s.id,
+    label: `${s.id} ${s.name}`
+}))
 
 export default function AlarmsPage() {
     const [open, setOpen] = React.useState(false)
-    const [selectedStations, setSelectedStations] = React.useState<string[]>(["srs-02"])
+    const [hasMounted, setHasMounted] = React.useState(false)
+    const [selectedStations, setSelectedStations] = React.useState<string[]>([])
     const [isTableExpanded, setIsTableExpanded] = React.useState(false)
+
+    // Top Alerting Stations calculation
+    const topAlertingStations = React.useMemo(() => {
+        const counts = mockData.alarms.reduce((acc, curr) => {
+            acc[curr.stationId] = (acc[curr.stationId] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+
+        return Object.entries(counts)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 5);
+    }, []);
+
+    // Filtering states
+    const [searchQuery, setSearchQuery] = React.useState("")
+    const [selectedSeverity, setSelectedSeverity] = React.useState<string | null>(null)
+    const [startDate, setStartDate] = React.useState("")
+    const [endDate, setEndDate] = React.useState("")
+
+    // Load from localStorage on mount
+    React.useEffect(() => {
+        const savedStations = localStorage.getItem("alarms_selectedStations")
+        if (savedStations) setSelectedStations(JSON.parse(savedStations))
+
+        const savedSearch = localStorage.getItem("alarms_searchQuery")
+        if (savedSearch) setSearchQuery(savedSearch)
+
+        const savedSeverity = localStorage.getItem("alarms_selectedSeverity")
+        if (savedSeverity) setSelectedSeverity(JSON.parse(savedSeverity))
+
+        const savedStart = localStorage.getItem("alarms_startDate")
+        if (savedStart) setStartDate(savedStart)
+
+        const savedEnd = localStorage.getItem("alarms_endDate")
+        if (savedEnd) setEndDate(savedEnd)
+
+        setHasMounted(true)
+    }, [])
+
+    // Persist filters to localStorage
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("alarms_selectedStations", JSON.stringify(selectedStations))
+        }
+    }, [selectedStations, hasMounted])
+
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("alarms_searchQuery", searchQuery)
+        }
+    }, [searchQuery, hasMounted])
+
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("alarms_selectedSeverity", JSON.stringify(selectedSeverity))
+        }
+    }, [selectedSeverity, hasMounted])
+
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("alarms_startDate", startDate)
+        }
+    }, [startDate, hasMounted])
+
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("alarms_endDate", endDate)
+        }
+    }, [endDate, hasMounted])
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = React.useState(1)
+    const itemsPerPage = isTableExpanded ? 10 : 5
+
+    // Counts for filters
+    const severityCounts = React.useMemo(() => {
+        return mockData.alarms.reduce((acc, curr) => {
+            acc[curr.severity] = (acc[curr.severity] || 0) + 1;
+            acc['All'] = (acc['All'] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>)
+    }, [])
+
+    // Filter Logic
+    const filteredAlarms = React.useMemo(() => {
+        return mockData.alarms.filter(alarm => {
+            // Global search
+            const matchesSearch = searchQuery === "" ||
+                Object.values(alarm).some(val =>
+                    val?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+                )
+
+            // Station filter
+            const matchesStation = selectedStations.length === 0 || selectedStations.includes(alarm.stationId)
+
+            // Severity filter
+            const matchesSeverity = !selectedSeverity || alarm.severity === selectedSeverity
+
+            // Date filter
+            const logDate = alarm.time ? new Date(alarm.time.split(' ')[0]) : null
+            const matchesStartDate = !startDate || (logDate && logDate >= new Date(startDate))
+            const matchesEndDate = !endDate || (logDate && logDate <= new Date(endDate))
+
+            return matchesSearch && matchesStation && matchesSeverity && matchesStartDate && matchesEndDate
+        })
+    }, [searchQuery, selectedStations, selectedSeverity, startDate, endDate])
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredAlarms.length / itemsPerPage)
+    const paginatedAlarms = filteredAlarms.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+    const resetFilters = () => {
+        setSearchQuery("")
+        setSelectedSeverity(null)
+        setSelectedStations([])
+        setStartDate("")
+        setEndDate("")
+        setCurrentPage(1)
+    }
+
+    React.useEffect(() => {
+        setCurrentPage(1)
+    }, [searchQuery, selectedStations, selectedSeverity, startDate, endDate, itemsPerPage])
 
     return (
         <div className="flex flex-col p-2 lg:p-4 gap-4 h-[calc(100vh-4rem)] bg-[#09090b] text-zinc-100 font-sans overflow-hidden">
@@ -122,42 +243,25 @@ export default function AlarmsPage() {
                                 </div>
                             </div>
                             <div className="flex flex-col gap-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-zinc-800/50 w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-zinc-300 border border-zinc-700">04</div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between mb-1.5">
-                                            <span className="text-sm font-medium text-zinc-200">SRS-04 (North)</span>
-                                            <span className="text-xs font-bold text-red-500">24 Alerts</span>
+                                {topAlertingStations.map(([stationId, count], i) => {
+                                    const station = mockData.stations.find(s => s.id === stationId);
+                                    return (
+                                        <div key={i} className="flex items-center gap-4">
+                                            <div className="bg-zinc-800/50 w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-zinc-300 border border-zinc-700">
+                                                {stationId.split('-')[1]}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between mb-1.5">
+                                                    <span className="text-sm font-medium text-zinc-200">{station?.name || stationId}</span>
+                                                    <span className="text-xs font-bold text-red-500">{count} Alerts</span>
+                                                </div>
+                                                <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                                                    <div className="bg-red-500 h-1.5 rounded-full transition-all duration-500" style={{ width: `${(count / Number(topAlertingStations[0][1])) * 100}%` }}></div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-red-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-zinc-800/50 w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-zinc-300 border border-zinc-700">12</div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between mb-1.5">
-                                            <span className="text-sm font-medium text-zinc-200">SRS-12 (East)</span>
-                                            <span className="text-xs font-bold text-amber-500">18 Alerts</span>
-                                        </div>
-                                        <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '60%' }}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-zinc-800/50 w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-zinc-300 border border-zinc-700">09</div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between mb-1.5">
-                                            <span className="text-sm font-medium text-zinc-200">SRS-09 (North)</span>
-                                            <span className="text-xs font-bold text-zinc-400">12 Alerts</span>
-                                        </div>
-                                        <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-zinc-500 h-1.5 rounded-full" style={{ width: '40%' }}></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -165,7 +269,7 @@ export default function AlarmsPage() {
                 )}
 
                 {/* Table Data */}
-                <div className="flex-1 p-2 overflow-hidden flex flex-col">
+                <div className="flex-1 p-4 overflow-hidden flex flex-col">
                     <div className="bg-[#18181b] border border-zinc-800 rounded-xl shadow-sm flex flex-col h-full overflow-hidden">
 
                         {/* Table Operations Heading */}
@@ -200,25 +304,49 @@ export default function AlarmsPage() {
                                         {/* Filters Content */}
                                         <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
                                             <div className="flex flex-col gap-1">
-                                                <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-red-500/10 text-red-500 transition-colors group w-full text-left border border-red-500/20">
+                                                <button
+                                                    onClick={() => setSelectedSeverity(null)}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left border",
+                                                        selectedSeverity === null ? "bg-red-500/10 text-red-500 border-red-500/20" : "hover:bg-zinc-800/50 text-zinc-400 border-transparent hover:border-zinc-800"
+                                                    )}
+                                                >
                                                     <BellRing className="w-5 h-5" />
                                                     <span className="text-sm font-medium">All Alarms</span>
-                                                    <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">142</span>
+                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{severityCounts['All']}</span>
                                                 </button>
-                                                <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-zinc-800/50 text-zinc-400 transition-colors group w-full text-left border border-transparent hover:border-zinc-800">
+                                                <button
+                                                    onClick={() => setSelectedSeverity("Critical")}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left border",
+                                                        selectedSeverity === "Critical" ? "bg-red-500/10 text-red-500 border-red-500/20" : "hover:bg-zinc-800/50 text-zinc-400 border-transparent hover:border-zinc-800"
+                                                    )}
+                                                >
                                                     <AlertCircle className="w-5 h-5 text-red-500" />
                                                     <span className="text-sm font-medium text-zinc-300">Critical Only</span>
-                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">12</span>
+                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{severityCounts['Critical']}</span>
                                                 </button>
-                                                <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-zinc-800/50 text-zinc-400 transition-colors group w-full text-left border border-transparent hover:border-zinc-800">
+                                                <button
+                                                    onClick={() => setSelectedSeverity("Warning")}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left border",
+                                                        selectedSeverity === "Warning" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "hover:bg-zinc-800/50 text-zinc-400 border-transparent hover:border-zinc-800"
+                                                    )}
+                                                >
                                                     <AlertTriangle className="w-5 h-5 text-amber-500" />
                                                     <span className="text-sm font-medium text-zinc-300">Warnings</span>
-                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">45</span>
+                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{severityCounts['Warning']}</span>
                                                 </button>
-                                                <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-zinc-800/50 text-zinc-400 transition-colors group w-full text-left border border-transparent hover:border-zinc-800">
+                                                <button
+                                                    onClick={() => setSelectedSeverity("Info")}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left border",
+                                                        selectedSeverity === "Info" ? "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20" : "hover:bg-zinc-800/50 text-zinc-400 border-transparent hover:border-zinc-800"
+                                                    )}
+                                                >
                                                     <Info className="w-5 h-5 text-[#13a4ec]" />
                                                     <span className="text-sm font-medium text-zinc-300">Info Logs</span>
-                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">85</span>
+                                                    <span className="ml-auto bg-zinc-800/50 text-zinc-400 group-hover:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{severityCounts['Info']}</span>
                                                 </button>
                                             </div>
 
@@ -236,7 +364,7 @@ export default function AlarmsPage() {
                                                     >
                                                         <span className="truncate text-zinc-300">
                                                             {selectedStations.length === 0
-                                                                ? "Search stations..."
+                                                                ? "Select Station(s)"
                                                                 : `${selectedStations.length} station${selectedStations.length > 1 ? 's' : ''} selected`}
                                                         </span>
                                                         <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
@@ -310,27 +438,40 @@ export default function AlarmsPage() {
                                                     <label className="text-xs font-medium text-zinc-200">Time Range</label>
                                                     <span className="text-[10px] text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">Last 24h</span>
                                                 </div>
-                                                <div className="px-1">
-                                                    <div className="relative pt-4 pb-2">
-                                                        <div className="h-1 bg-zinc-800 rounded-full w-full relative">
-                                                            <div className="absolute left-[20%] right-[30%] top-0 bottom-0 bg-red-500 rounded-full"></div>
-                                                            <div className="absolute left-[20%] top-1/2 -translate-y-1/2 w-3 h-3 bg-[#09090b] border-2 border-red-500 rounded-full shadow cursor-pointer hover:scale-110 transition-transform z-10"></div>
-                                                            <div className="absolute right-[30%] top-1/2 -translate-y-1/2 w-3 h-3 bg-[#09090b] border-2 border-red-500 rounded-full shadow cursor-pointer hover:scale-110 transition-transform z-10"></div>
-                                                        </div>
-                                                        <div className="flex justify-between mt-2 text-[10px] text-zinc-500 font-mono">
-                                                            <span>00:00</span>
-                                                            <span>23:59</span>
-                                                        </div>
+                                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                                    <div>
+                                                        <label className="text-[10px] text-zinc-500 mb-1 block">Start Date</label>
+                                                        <input
+                                                            className="bg-zinc-900 border border-zinc-800 text-[11px] text-white rounded px-2 py-1.5 w-full focus:border-red-500 focus:ring-1 focus:ring-red-500 placeholder-zinc-500 outline-none"
+                                                            type="date"
+                                                            value={startDate}
+                                                            onChange={(e) => setStartDate(e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] text-zinc-500 mb-1 block">End Date</label>
+                                                        <input
+                                                            className="bg-zinc-900 border border-zinc-800 text-[11px] text-white rounded px-2 py-1.5 w-full focus:border-red-500 focus:ring-1 focus:ring-red-500 placeholder-zinc-500 outline-none"
+                                                            type="date"
+                                                            value={endDate}
+                                                            onChange={(e) => setEndDate(e.target.value)}
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="p-4 border-t border-zinc-800 bg-[#09090b]">
-                                            <button className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium text-xs shadow-lg shadow-red-500/20 transition-all border border-red-500">
+                                            <button
+                                                className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium text-xs shadow-lg shadow-red-500/20 transition-all border border-red-500"
+                                                onClick={() => { /* Filters already reflect state */ }}
+                                            >
                                                 Apply Filters
                                             </button>
-                                            <button className="w-full mt-2 text-zinc-500 hover:text-white text-xs py-1 transition-colors">
+                                            <button
+                                                className="w-full mt-2 text-zinc-500 hover:text-white text-xs py-1 transition-colors"
+                                                onClick={resetFilters}
+                                            >
                                                 Reset Defaults
                                             </button>
                                         </div>
@@ -342,7 +483,13 @@ export default function AlarmsPage() {
                                     <span className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <Search className="w-4 h-4 text-zinc-500" />
                                     </span>
-                                    <input className="pl-8 w-48 lg:w-64 bg-[#09090b] border border-zinc-800 outline-none text-xs rounded-md focus:border-red-500 focus:ring-1 focus:ring-red-500 py-1.5 text-white placeholder-zinc-500" placeholder="Filter alarms..." type="text" />
+                                    <input
+                                        className="pl-8 w-48 lg:w-64 bg-[#09090b] border border-zinc-800 outline-none text-xs rounded-md focus:border-red-500 focus:ring-1 focus:ring-red-500 py-1.5 text-white placeholder-zinc-500"
+                                        placeholder="Filter alarms..."
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
                                 </div>
                                 <div className="hidden sm:block h-4 w-px bg-zinc-800 mx-1"></div>
                                 <button
@@ -375,18 +522,7 @@ export default function AlarmsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm divide-y divide-zinc-800/50 text-zinc-200 bg-[#18181b]">
-                                    {[
-                                        { time: "2023-10-27 10:42:15", id: "SRS-04", severity: "Critical", severityClass: "bg-red-500/10 text-red-500 border-red-500/20", indicatorClass: "bg-red-500", param: "PH High (>9.5)", duration: "15m 30s" },
-                                        { time: "2023-10-27 10:40:00", id: "SRS-12", severity: "Warning", severityClass: "bg-amber-500/10 text-amber-500 border-amber-500/20", indicatorClass: "bg-amber-500", param: "Flow Rate Low", duration: "45m 00s" },
-                                        { time: "2023-10-27 10:15:30", id: "SRS-01", severity: "Info", severityClass: "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20", indicatorClass: "bg-[#13a4ec]", param: "Pump Cycle Start", duration: "-" },
-                                        { time: "2023-10-27 09:55:10", id: "SRS-04", severity: "Critical", severityClass: "bg-red-500/10 text-red-500 border-red-500/20", indicatorClass: "bg-red-500", param: "Emergency Stop Activated", duration: "2h 10m" },
-                                        { time: "2023-10-27 09:30:22", id: "SRS-28", severity: "Warning", severityClass: "bg-amber-500/10 text-amber-500 border-amber-500/20", indicatorClass: "bg-amber-500", param: "Tank Level High (85%)", duration: "10m 05s" },
-                                        { time: "2023-10-27 08:45:00", id: "SRS-15", severity: "Info", severityClass: "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20", indicatorClass: "bg-[#13a4ec]", param: "Maintenance Mode Enabled", duration: "4h 00m" },
-                                        { time: "2023-10-27 08:12:45", id: "SRS-09", severity: "Critical", severityClass: "bg-red-500/10 text-red-500 border-red-500/20", indicatorClass: "bg-red-500", param: "Power Failure", duration: "30m 15s" },
-                                        { time: "2023-10-27 07:55:20", id: "SRS-11", severity: "Warning", severityClass: "bg-amber-500/10 text-amber-500 border-amber-500/20", indicatorClass: "bg-amber-500", param: "Valve 4 Position Error", duration: "12m 45s" },
-                                        { time: "2023-10-27 07:15:00", id: "SRS-05", severity: "Warning", severityClass: "bg-amber-500/10 text-amber-500 border-amber-500/20", indicatorClass: "bg-amber-500", param: "Temperature High (45°C)", duration: "55m 20s" },
-                                        { time: "2023-10-27 06:30:10", id: "SRS-02", severity: "Critical", severityClass: "bg-red-500/10 text-red-500 border-red-500/20", indicatorClass: "bg-red-500", param: "Pump 2 Overload", duration: "1h 25m" },
-                                    ].slice(0, isTableExpanded ? 10 : 5).map((row, idx) => (
+                                    {paginatedAlarms.map((row, idx) => (
                                         <tr key={idx} className="group hover:bg-zinc-800/50 transition-colors">
                                             <td className="px-6 py-2 font-mono text-xs text-zinc-500 group-hover:text-white">
                                                 <div className="flex items-center gap-2">
@@ -394,7 +530,7 @@ export default function AlarmsPage() {
                                                     {row.time}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-2 font-medium text-white">{row.id}</td>
+                                            <td className="px-6 py-2 font-medium text-white">{row.stationId}</td>
                                             <td className="px-6 py-2 whitespace-nowrap">
                                                 <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium border ${row.severityClass}`}>
                                                     <span className={`w-1.5 h-1.5 rounded-full ${row.indicatorClass}`}></span>
@@ -420,17 +556,50 @@ export default function AlarmsPage() {
 
                         {/* Pagination */}
                         <div className="px-6 py-2 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-500 bg-[#18181b]">
-                            <span>Showing 1-{isTableExpanded ? 10 : 5} of 142 records</span>
+                            <span>Showing {filteredAlarms.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}-{Math.min(currentPage * itemsPerPage, filteredAlarms.length)} of {filteredAlarms.length} records</span>
                             <div className="flex items-center gap-1">
-                                <button className="p-1 hover:bg-white/10 rounded disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                                <button
+                                    className="p-1 hover:bg-white/10 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                >
                                     <ChevronLeft className="w-4 h-4" />
                                 </button>
-                                <button className="w-6 h-6 flex items-center justify-center rounded bg-red-500 text-white font-medium">1</button>
-                                <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors">2</button>
-                                <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors">3</button>
-                                <span className="mx-1">...</span>
-                                <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors">21</button>
-                                <button className="p-1 hover:bg-white/10 rounded">
+
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum = i + 1;
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => setCurrentPage(pageNum)}
+                                            className={cn(
+                                                "w-6 h-6 flex items-center justify-center rounded transition-colors",
+                                                currentPage === pageNum ? "bg-red-500 text-white font-medium" : "hover:bg-white/10"
+                                            )}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    )
+                                })}
+
+                                {totalPages > 5 && <span className="mx-1">...</span>}
+                                {totalPages > 5 && (
+                                    <button
+                                        onClick={() => setCurrentPage(totalPages)}
+                                        className={cn(
+                                            "w-6 h-6 flex items-center justify-center rounded transition-colors",
+                                            currentPage === totalPages ? "bg-red-500 text-white font-medium" : "hover:bg-white/10"
+                                        )}
+                                    >
+                                        {totalPages}
+                                    </button>
+                                )}
+
+                                <button
+                                    className="p-1 hover:bg-white/10 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages || totalPages === 0}
+                                >
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>

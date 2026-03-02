@@ -1,15 +1,19 @@
 {
     "stations": [
         {
-            "id": "SRS-01",
-            "name": "Central Hub",
-            "status": "Normal",
+            "id": "Station-01",
+            "name": "ICAD",
+            "status": "Operational",
             "uptime": "99.9%",
             "networkStrength": "Excellent",
             "lastPing": "2 mins ago",
             "activeBays": 4,
             "totalBays": 4,
             "flowRate": 240,
+            "lat": 24.255951,
+            "lng": 54.453478,
+            "ph": 7.2,
+            "conductivity": 1400,
             "trend": [
                 10,
                 15,
@@ -21,8 +25,8 @@
             ]
         },
         {
-            "id": "SRS-02",
-            "name": "North Sector Node",
+            "id": "Station-02",
+            "name": "Marfa WwTW",
             "status": "Maint.",
             "uptime": "98.2%",
             "networkStrength": "Fair",
@@ -30,6 +34,10 @@
             "activeBays": 1,
             "totalBays": 4,
             "flowRate": 45,
+            "lat": 24.0384167,
+            "lng": 53.4639167,
+            "ph": 7.1,
+            "conductivity": 1350,
             "trend": [
                 5,
                 5,
@@ -41,15 +49,19 @@
             ]
         },
         {
-            "id": "SRS-03",
-            "name": "East Outpost",
-            "status": "Normal",
+            "id": "Station-03",
+            "name": "Madinat Zayed WwTW",
+            "status": "Operational",
             "uptime": "99.5%",
             "networkStrength": "Good",
             "lastPing": "1 min ago",
             "activeBays": 3,
             "totalBays": 4,
             "flowRate": 180,
+            "lat": 23.616094,
+            "lng": 53.7634116,
+            "ph": 7.3,
+            "conductivity": 1420,
             "trend": [
                 20,
                 18,
@@ -61,28 +73,36 @@
             ]
         },
         {
-            "id": "SRS-04",
-            "name": "West Gate",
-            "status": "ALARM",
+            "id": "Station-04",
+            "name": "Liwa WwTW",
+            "status": "Alarm",
             "uptime": "85.4%",
             "networkStrength": "Poor",
             "lastPing": "1 hr ago",
             "activeBays": 0,
             "totalBays": 4,
             "flowRate": 0,
+            "lat": 23.0850674,
+            "lng": 53.7685215,
+            "ph": 8.1,
+            "conductivity": 1550,
             "alarmDetail": "AC Failure - Bay 4",
             "trend": null
         },
         {
-            "id": "SRS-05",
-            "name": "South Relay",
-            "status": "Normal",
+            "id": "Station-05",
+            "name": "Gayathi WwTW",
+            "status": "Operational",
             "uptime": "99.8%",
             "networkStrength": "Excellent",
             "lastPing": "Just now",
             "activeBays": 2,
             "totalBays": 4,
             "flowRate": 120,
+            "lat": 23.857918,
+            "lng": 52.827267,
+            "ph": 7.4,
+            "conductivity": 1380,
             "trend": [
                 10,
                 12,
@@ -94,15 +114,19 @@
             ]
         },
         {
-            "id": "SRS-06",
-            "name": "Sector 6",
-            "status": "Normal",
+            "id": "Station-06",
+            "name": "Baaya Silla WwTW",
+            "status": "Operational",
             "uptime": "99.0%",
             "networkStrength": "Good",
             "lastPing": "10 mins ago",
             "activeBays": 4,
             "totalBays": 4,
             "flowRate": 210,
+            "lat": 24.094244,
+            "lng": 51.720417,
+            "ph": 7.2,
+            "conductivity": 1404,
             "trend": [
                 20,
                 22,
@@ -114,15 +138,19 @@
             ]
         },
         {
-            "id": "SRS-07",
-            "name": "Sector 7",
-            "status": "Normal",
+            "id": "Station-07",
+            "name": "Ruwais",
+            "status": "Maint.",
             "uptime": "99.1%",
             "networkStrength": "Good",
             "lastPing": "12 mins ago",
             "activeBays": 2,
             "totalBays": 4,
             "flowRate": 98,
+            "lat": 23.959457,
+            "lng": 52.830078,
+            "ph": 7.0,
+            "conductivity": 1350,
             "trend": [
                 8,
                 9,
@@ -134,15 +162,19 @@
             ]
         },
         {
-            "id": "SRS-08",
-            "name": "Sector 8",
-            "status": "Normal",
+            "id": "Station-08",
+            "name": "Al Saad WwTW",
+            "status": "Operational",
             "uptime": "98.9%",
             "networkStrength": "Good",
             "lastPing": "15 mins ago",
             "activeBays": 1,
             "totalBays": 4,
             "flowRate": 50,
+            "lat": 24.19069,
+            "lng": 55.466184,
+            "ph": 7.1,
+            "conductivity": 1420,
             "trend": [
                 5,
                 6,
@@ -154,28 +186,36 @@
             ]
         },
         {
-            "id": "SRS-09",
-            "name": "Sector 9",
-            "status": "Offline",
+            "id": "Station-09",
+            "name": "Al Haier WwTW",
+            "status": "Closed",
             "uptime": "0.0%",
             "networkStrength": "None",
             "lastPing": "2 days ago",
             "activeBays": null,
             "totalBays": null,
             "flowRate": null,
+            "lat": 24.582546,
+            "lng": 55.731088,
+            "ph": 8.0,
+            "conductivity": 1550,
             "alarmDetail": "Connection Lost",
             "trend": null
         },
         {
-            "id": "SRS-10",
-            "name": "Sector 10",
-            "status": "Normal",
+            "id": "Station-10",
+            "name": "Al Quoa WwTW",
+            "status": "Operational",
             "uptime": "99.2%",
             "networkStrength": "Excellent",
             "lastPing": "1 min ago",
             "activeBays": 3,
             "totalBays": 4,
             "flowRate": 175,
+            "lat": 23.407444,
+            "lng": 55.356012,
+            "ph": 7.5,
+            "conductivity": 1450,
             "trend": [
                 15,
                 16,
@@ -187,44 +227,16 @@
             ]
         },
         {
-            "id": "SRS-11",
-            "name": "Sector 11",
-            "status": "Inactive",
+            "id": "Station-11",
+            "name": "Wadi Fili WwTW",
+            "status": "Closed",
             "uptime": "0%",
             "networkStrength": "None",
-            "lastPing": "N/A"
-        },
-        {
-            "id": "SRS-12",
-            "name": "Sector 12",
-            "status": "Alarm",
-            "uptime": "88%",
-            "networkStrength": "Poor",
-            "lastPing": "20 mins ago"
-        },
-        {
-            "id": "SRS-13",
-            "name": "Sector 13",
-            "status": "Inactive",
-            "uptime": "0%",
-            "networkStrength": "None",
-            "lastPing": "N/A"
-        },
-        {
-            "id": "SRS-14",
-            "name": "Sector 14",
-            "status": "Inactive",
-            "uptime": "0%",
-            "networkStrength": "None",
-            "lastPing": "N/A"
-        },
-        {
-            "id": "SRS-15",
-            "name": "Sector 15",
-            "status": "Inactive",
-            "uptime": "0%",
-            "networkStrength": "None",
-            "lastPing": "N/A"
+            "lastPing": "N/A",
+            "lat": 24.482103,
+            "lng": 55.439986,
+            "ph": 7.2,
+            "conductivity": 1400
         }
     ],
     "tripLogs": [
@@ -264,31 +276,484 @@
     "alarms": [
         {
             "id": "AL-001",
+            "time": "2026-03-01 20:45:12",
+            "stationId": "Station-04",
             "severity": "Critical",
-            "description": "Network partition detected at ST-004",
-            "timestamp": "2026-03-01 21:00",
-            "status": "Open"
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "pH High (>9.5)",
+            "duration": "15m 30s"
         },
         {
             "id": "AL-002",
+            "time": "2026-03-01 20:40:00",
+            "stationId": "Station-04",
             "severity": "Warning",
-            "description": "High latency on ST-002 uplink",
-            "timestamp": "2026-03-01 21:15",
-            "status": "Acknowledged"
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Total Flow Rate Low",
+            "duration": "45m 00s"
         },
         {
             "id": "AL-003",
+            "time": "2026-03-01 20:15:30",
+            "stationId": "Station-04",
             "severity": "Info",
-            "description": "Scheduled maintenance for ST-001 completed",
-            "timestamp": "2026-03-01 02:00",
-            "status": "Resolved"
+            "severityClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20",
+            "indicatorClass": "bg-[#13a4ec]",
+            "param": "Pump Cycle Start",
+            "duration": "-"
         },
         {
             "id": "AL-004",
+            "time": "2026-03-01 19:55:10",
+            "stationId": "Station-04",
             "severity": "Critical",
-            "description": "Power failure on backup generator B",
-            "timestamp": "2026-03-01 18:30",
-            "status": "In Progress"
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Emergency Stop Activated",
+            "duration": "2h 10m"
+        },
+        {
+            "id": "AL-005",
+            "time": "2026-03-01 19:30:22",
+            "stationId": "Station-04",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Tank Level High (85%)",
+            "duration": "10m 05s"
+        },
+        {
+            "id": "AL-006",
+            "time": "2026-03-01 18:45:00",
+            "stationId": "Station-01",
+            "severity": "Info",
+            "severityClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20",
+            "indicatorClass": "bg-[#13a4ec]",
+            "param": "Maintenance Mode Enabled",
+            "duration": "4h 00m"
+        },
+        {
+            "id": "AL-007",
+            "time": "2026-03-01 18:12:45",
+            "stationId": "Station-09",
+            "severity": "Critical",
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Power Failure",
+            "duration": "30m 15s"
+        },
+        {
+            "id": "AL-008",
+            "time": "2026-03-01 17:55:20",
+            "stationId": "Station-11",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Valve 4 Position Error",
+            "duration": "12m 45s"
+        },
+        {
+            "id": "AL-009",
+            "time": "2026-03-01 17:15:00",
+            "stationId": "Station-05",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Temperature High (45°C)",
+            "duration": "55m 20s"
+        },
+        {
+            "id": "AL-010",
+            "time": "2026-03-01 16:30:10",
+            "stationId": "Station-02",
+            "severity": "Critical",
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Pump 2 Overload",
+            "duration": "1h 25m"
+        },
+        {
+            "id": "AL-011",
+            "time": "2026-03-01 16:05:42",
+            "stationId": "Station-07",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Conductivity High (>2000 µS/cm)",
+            "duration": "18m 10s"
+        },
+        {
+            "id": "AL-012",
+            "time": "2026-03-01 15:48:33",
+            "stationId": "Station-10",
+            "severity": "Info",
+            "severityClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20",
+            "indicatorClass": "bg-[#13a4ec]",
+            "param": "System Restarted",
+            "duration": "-"
+        },
+        {
+            "id": "AL-013",
+            "time": "2026-03-01 15:20:11",
+            "stationId": "Station-08",
+            "severity": "Critical",
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Overflow Detected",
+            "duration": "22m 05s"
+        },
+        {
+            "id": "AL-014",
+            "time": "2026-03-01 14:55:09",
+            "stationId": "Station-11",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Pressure Drop Detected",
+            "duration": "35m 40s"
+        },
+        {
+            "id": "AL-015",
+            "time": "2026-03-01 14:30:00",
+            "stationId": "Station-06",
+            "severity": "Info",
+            "severityClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20",
+            "indicatorClass": "bg-[#13a4ec]",
+            "param": "Calibration Completed",
+            "duration": "-"
+        },
+        {
+            "id": "AL-016",
+            "time": "2026-03-01 14:05:27",
+            "stationId": "Station-03",
+            "severity": "Critical",
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Sensor Failure (pH Probe)",
+            "duration": "1h 05m"
+        },
+        {
+            "id": "AL-017",
+            "time": "2026-03-01 13:40:18",
+            "stationId": "Station-03",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "Tank Level Low (20%)",
+            "duration": "28m 50s"
+        },
+        {
+            "id": "AL-018",
+            "time": "2026-03-01 13:05:44",
+            "stationId": "Station-11",
+            "severity": "Critical",
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Unauthorized Access Detected",
+            "duration": "8m 15s"
+        },
+        {
+            "id": "AL-019",
+            "time": "2026-03-01 12:40:30",
+            "stationId": "Station-05",
+            "severity": "Info",
+            "severityClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20",
+            "indicatorClass": "bg-[#13a4ec]",
+            "param": "Backup Generator Online",
+            "duration": "2h 00m"
+        },
+        {
+            "id": "AL-020",
+            "time": "2026-03-01 12:10:12",
+            "stationId": "Station-09",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "High Turbidity Detected",
+            "duration": "41m 22s"
+        },
+        {
+            "id": "AL-021",
+            "time": "2026-03-01 11:45:00",
+            "stationId": "Station-05",
+            "severity": "Info",
+            "severityClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20",
+            "indicatorClass": "bg-[#13a4ec]",
+            "param": "System Maintenance Completed",
+            "duration": "-"
+        },
+        {
+            "id": "AL-022",
+            "time": "2026-03-01 11:20:35",
+            "stationId": "Station-02",
+            "severity": "Critical",
+            "severityClass": "bg-red-500/10 text-red-500 border-red-500/20",
+            "indicatorClass": "bg-red-500",
+            "param": "Pump 1 Failure",
+            "duration": "15m 45s"
+        },
+        {
+            "id": "AL-023",
+            "time": "2026-03-01 10:55:12",
+            "stationId": "Station-08",
+            "severity": "Warning",
+            "severityClass": "bg-amber-500/10 text-amber-500 border-amber-500/20",
+            "indicatorClass": "bg-amber-500",
+            "param": "pH Out of Range",
+            "duration": "25m 30s"
+        }
+    ],
+    "dischargeLogs": [
+        {
+            "id": "AL-024",
+            "stationId": "Station-08",
+            "srsName": "Ghayathi Station",
+            "time": "2026-03-01 10:55:12",
+            "bay": "Bay 02",
+            "plate": "51434-AD",
+            "rfid": "RFID-88210",
+            "ph": "7.2",
+            "phColor": "text-emerald-500",
+            "cond": "1,404",
+            "vol": "19.77",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 20:42:05",
+            "stationId": "Station-03",
+            "srsName": "Al Mirfa",
+            "bay": "Bay 01",
+            "plate": "88291-AD",
+            "rfid": "RFID-10294",
+            "ph": "9.1",
+            "phColor": "text-rose-500",
+            "cond": "2,100",
+            "vol": "12.50",
+            "status": "ALARM",
+            "statusClass": "bg-rose-500/10 text-rose-500 border-rose-500/20"
+        },
+        {
+            "time": "2026-03-01 20:38:11",
+            "stationId": "Station-02",
+            "srsName": "Madinat Zayed",
+            "bay": "Bay 04",
+            "plate": "33219-DU",
+            "rfid": "RFID-34521",
+            "ph": "7.8",
+            "phColor": "text-emerald-500",
+            "cond": "1,050",
+            "vol": "22.10",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 20:35:45",
+            "stationId": "Station-01",
+            "srsName": "Ruwais",
+            "bay": "Bay 02",
+            "plate": "10293-AD",
+            "rfid": "RFID-99281",
+            "ph": "7.1",
+            "phColor": "text-emerald-500",
+            "cond": "980",
+            "vol": "--",
+            "status": "DISCHARGING",
+            "statusClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20 animate-pulse"
+        },
+        {
+            "time": "2026-03-01 20:30:22",
+            "stationId": "Station-05",
+            "bay": "Bay 01",
+            "plate": "65721-AD",
+            "ph": "6.9",
+            "phColor": "text-emerald-500",
+            "cond": "1,250",
+            "vol": "18.45",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 20:25:10",
+            "stationId": "Station-04",
+            "bay": "Bay 03",
+            "plate": "99281-AD",
+            "ph": "7.4",
+            "phColor": "text-emerald-500",
+            "cond": "1,120",
+            "vol": "20.05",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 20:22:01",
+            "stationId": "Station-01",
+            "bay": "Bay 01",
+            "plate": "44521-DU",
+            "ph": "7.3",
+            "phColor": "text-emerald-500",
+            "cond": "1,010",
+            "vol": "19.20",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 20:15:33",
+            "stationId": "Station-02",
+            "bay": "Bay 02",
+            "plate": "22190-AD",
+            "ph": "8.2",
+            "phColor": "text-amber-500",
+            "cond": "1,600",
+            "vol": "15.80",
+            "status": "WARNING",
+            "statusClass": "bg-amber-500/10 text-amber-500 border-amber-500/20"
+        },
+        {
+            "time": "2026-03-01 20:10:05",
+            "stationId": "Station-06",
+            "bay": "Bay 03",
+            "plate": "11223-AD",
+            "ph": "7.5",
+            "phColor": "text-emerald-500",
+            "cond": "1,100",
+            "vol": "21.50",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 20:05:12",
+            "stationId": "Station-03",
+            "bay": "Bay 01",
+            "plate": "33445-DU",
+            "ph": "8.5",
+            "phColor": "text-rose-500",
+            "cond": "1,950",
+            "vol": "14.20",
+            "status": "ALARM",
+            "statusClass": "bg-rose-500/10 text-rose-500 border-rose-500/20"
+        },
+        {
+            "time": "2026-03-01 20:00:41",
+            "stationId": "Station-02",
+            "bay": "Bay 03",
+            "plate": "77812-AD",
+            "ph": "7.6",
+            "phColor": "text-emerald-500",
+            "cond": "1,180",
+            "vol": "20.10",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 19:55:28",
+            "stationId": "Station-04",
+            "bay": "Bay 02",
+            "plate": "66329-AD",
+            "ph": "7.0",
+            "phColor": "text-emerald-500",
+            "cond": "990",
+            "vol": "18.75",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 19:50:14",
+            "stationId": "Station-05",
+            "bay": "Bay 04",
+            "plate": "90117-DU",
+            "ph": "8.0",
+            "phColor": "text-amber-500",
+            "cond": "1,540",
+            "vol": "16.40",
+            "status": "WARNING",
+            "statusClass": "bg-amber-500/10 text-amber-500 border-amber-500/20"
+        },
+        {
+            "time": "2026-03-01 19:45:02",
+            "stationId": "Station-01",
+            "bay": "Bay 03",
+            "plate": "55418-AD",
+            "ph": "7.3",
+            "phColor": "text-emerald-500",
+            "cond": "1,060",
+            "vol": "19.90",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 19:40:37",
+            "stationId": "Station-06",
+            "bay": "Bay 02",
+            "plate": "28764-AD",
+            "ph": "6.8",
+            "phColor": "text-emerald-500",
+            "cond": "1,300",
+            "vol": "--",
+            "status": "DISCHARGING",
+            "statusClass": "bg-[#13a4ec]/10 text-[#13a4ec] border-[#13a4ec]/20 animate-pulse"
+        },
+        {
+            "time": "2026-03-01 19:35:19",
+            "stationId": "Station-03",
+            "bay": "Bay 04",
+            "plate": "74102-AD",
+            "ph": "9.3",
+            "phColor": "text-rose-500",
+            "cond": "2,250",
+            "vol": "13.10",
+            "status": "ALARM",
+            "statusClass": "bg-rose-500/10 text-rose-500 border-rose-500/20"
+        },
+        {
+            "time": "2026-03-01 19:30:44",
+            "stationId": "Station-02",
+            "bay": "Bay 01",
+            "plate": "11983-DU",
+            "ph": "7.4",
+            "phColor": "text-emerald-500",
+            "cond": "1,090",
+            "vol": "21.00",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 19:25:08",
+            "stationId": "Station-04",
+            "bay": "Bay 01",
+            "plate": "60211-AD",
+            "ph": "8.4",
+            "phColor": "text-amber-500",
+            "cond": "1,670",
+            "vol": "17.35",
+            "status": "WARNING",
+            "statusClass": "bg-amber-500/10 text-amber-500 border-amber-500/20"
+        },
+        {
+            "time": "2026-03-01 19:20:26",
+            "stationId": "Station-05",
+            "bay": "Bay 02",
+            "plate": "84590-AD",
+            "ph": "7.2",
+            "phColor": "text-emerald-500",
+            "cond": "1,140",
+            "vol": "19.60",
+            "status": "COMPLETED",
+            "statusClass": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+        },
+        {
+            "time": "2026-03-01 19:15:55",
+            "stationId": "Station-06",
+            "bay": "Bay 04",
+            "plate": "39027-DU",
+            "ph": "8.7",
+            "phColor": "text-rose-500",
+            "cond": "2,010",
+            "vol": "15.25",
+            "status": "ALARM",
+            "statusClass": "bg-rose-500/10 text-rose-500 border-rose-500/20"
         }
     ],
     "dashboardStats": {
@@ -306,9 +771,9 @@
         "criticalAlarms": {
             "count": 3,
             "stations": [
-                "SRS-04",
-                "SRS-12",
-                "SRS-29"
+                "Station-04",
+                "Station-02",
+                "Station-09"
             ]
         },
         "systemEfficiency": {
@@ -327,6 +792,7 @@
     "liveAlarms": [
         {
             "id": "LA-001",
+            "stationId": "Station-04",
             "time": "01-03-2026 14:13:05",
             "status": "ACTIVE",
             "class": "Bay_Alarm",
@@ -336,6 +802,7 @@
         },
         {
             "id": "LA-002",
+            "stationId": "Station-03",
             "time": "01-03-2026 14:13:00",
             "status": "ACTIVE",
             "class": "Bay_Alarm",
@@ -345,12 +812,33 @@
         },
         {
             "id": "LA-003",
+            "stationId": "Station-08",
             "time": "01-03-2026 00:24:12",
             "status": "ACK",
             "class": "Bay_Alarm",
             "alarm": "Bay Not Active",
             "description": "Bay 8 Offline Signal",
             "area": "Bay 8"
+        },
+        {
+            "id": "LA-004",
+            "stationId": "Station-02",
+            "time": "02-03-2026 09:42:18",
+            "status": "ACTIVE",
+            "class": "System_Alarm",
+            "alarm": "High Conductivity",
+            "description": "Conductivity level exceeded threshold limit (1600 µS/cm)",
+            "area": "Bay 12"
+        },
+        {
+            "id": "LA-005",
+            "stationId": "Station-01",
+            "time": "02-03-2026 10:15:33",
+            "status": "ACK",
+            "class": "Network_Alarm",
+            "alarm": "Communication Delay",
+            "description": "Ping response exceeded 1200ms latency threshold",
+            "area": "Bay 1"
         }
     ]
 }

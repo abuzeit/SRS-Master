@@ -28,8 +28,9 @@ export function NavbarBreadcrumb() {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    <BreadcrumbLink render={<Link href="/" />}>
-                        SRS Master
+                    <BreadcrumbLink render={<Link href="/" />} className="flex items-center gap-2">
+                        <img src="/logo.png" alt="SRS Master" className="size-4" />
+                        <span>SRS Master</span>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 {segments.length > 0 && <BreadcrumbSeparator />}

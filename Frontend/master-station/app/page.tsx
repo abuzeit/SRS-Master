@@ -6,13 +6,73 @@ import {
     CardContent,
 } from "@/components/ui/card"
 import mockData from "@/data/mockData.json"
-import { Waves, Truck, AlertTriangle, Activity, ArrowRight, ChevronDown, ChevronUp, Bell, Maximize2 } from "lucide-react"
+import { Waves, Truck, AlertTriangle, Activity, ArrowRight, ChevronDown, ChevronUp, Bell, Maximize2, Check, ChevronsUpDown, X } from "lucide-react"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
+
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
 
 export default function Dashboard() {
     const { dashboardStats, stations, liveAlarms } = mockData
     const [isAlarmFeedOpen, setIsAlarmFeedOpen] = React.useState(true)
+    const [hasMounted, setHasMounted] = React.useState(false)
+    const [selectedStatuses, setSelectedStatuses] = React.useState<string[]>([])
+    const [zoneOpen, setZoneOpen] = React.useState(false)
+    const [statusOpen, setStatusOpen] = React.useState(false)
+    const [selectedZones, setSelectedZones] = React.useState<string[]>([])
+
+    // Load from localStorage on mount
+    React.useEffect(() => {
+        const savedStatuses = localStorage.getItem("dashboard_selectedStatuses")
+        if (savedStatuses) setSelectedStatuses(JSON.parse(savedStatuses))
+        const savedZones = localStorage.getItem("dashboard_selectedZones")
+        if (savedZones) setSelectedZones(JSON.parse(savedZones))
+        setHasMounted(true)
+    }, [])
+
+    // Persist filters to localStorage
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("dashboard_selectedStatuses", JSON.stringify(selectedStatuses))
+        }
+    }, [selectedStatuses, hasMounted])
+
+    React.useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("dashboard_selectedZones", JSON.stringify(selectedZones))
+        }
+    }, [selectedZones, hasMounted])
+
+    // Get unique zone names (station IDs)
+    const stationOptions = stations.map(s => ({ value: s.id, label: s.id }))
+
+    const statusOptions = [
+        { value: "Operational", label: "Operational" },
+        { value: "Alarm", label: "Alarm" },
+        { value: "Maint.", label: "Maint." },
+        { value: "Closed", label: "Closed" },
+    ]
+
+    // Filter stations
+    const filteredStations = stations.filter(station => {
+        const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(station.status)
+        const matchesZone = selectedZones.length === 0 || selectedZones.includes(station.id)
+        return matchesStatus && matchesZone
+    })
 
     // Dummy data for sparkline
     const efficiencyData = dashboardStats.systemEfficiency.trend.map((val, i) => ({ val, index: i }))
@@ -121,48 +181,250 @@ export default function Dashboard() {
 
             {/* Grid of Stations */}
             <div className="space-y-4 pt-4">
-                <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-blue-500/10 p-2 rounded-lg border border-blue-500/20">
-                            <Activity className="h-4 w-4 text-blue-500" />
+                <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-zinc-800">
+                    <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center justify-center p-1 bg-white/5 rounded-lg border border-white/10 overflow-hidden size-9">
+                            <img src="/logo.png" alt="SRS Master" className="size-full object-contain" />
                         </div>
-                        <div>
-                            <h2 className="text-xl font-bold tracking-tight">Active Fleet Overview</h2>
-                            <p className="text-xs text-zinc-500 font-medium">Monitoring 30 receiving stations across North and South sectors</p>
+                        <div className="flex flex-col">
+                            <h2 className="text-xl font-bold tracking-tight whitespace-nowrap">Stations Overview</h2>
+                            <p className="text-xs text-zinc-500 font-medium whitespace-nowrap">Monitoring key data of all stations</p>
                         </div>
                     </div>
-                    <div className="flex gap-2">
-                        <button className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-700 transition-all shadow-sm">
-                            Zone: All <ChevronDown className="h-4 w-4 text-zinc-500" />
-                        </button>
-                        <button className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-700 transition-all shadow-sm">
-                            Status <ChevronDown className="h-4 w-4 text-zinc-500" />
-                        </button>
+                    <div className="flex gap-2 items-start">
+                        {/* Zone Multi-Select Combobox */}
+                        <Popover open={zoneOpen} onOpenChange={setZoneOpen}>
+                            <PopoverTrigger className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-700 transition-all shadow-sm min-w-[160px] cursor-pointer">
+                                <span className="truncate">
+                                    {selectedZones.length === 0
+                                        ? "Select Station(s)"
+                                        : `${selectedZones.length} selected`}
+                                </span>
+                                <ChevronsUpDown className="h-4 w-4 text-zinc-500 shrink-0" />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64 p-0 bg-[#09090b] border-zinc-800 text-white" align="start">
+                                <Command className="bg-[#09090b]">
+                                    <CommandInput placeholder="Search zones..." className="text-white border-b border-zinc-800 text-xs py-2" />
+                                    <CommandList className="custom-scrollbar max-h-48">
+                                        <CommandEmpty className="py-4 text-center text-xs text-zinc-400">No zone found.</CommandEmpty>
+                                        <CommandGroup>
+                                            <CommandItem
+                                                onSelect={() => {
+                                                    setSelectedZones(stationOptions.map(s => s.value))
+                                                }}
+                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                            >
+                                                <div className={cn(
+                                                    "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
+                                                    selectedZones.length === stationOptions.length
+                                                        ? "bg-blue-500 text-white"
+                                                        : "opacity-50 [&_svg]:invisible"
+                                                )}>
+                                                    <Check className={cn("h-2.5 w-2.5")} />
+                                                </div>
+                                                <span className="font-bold">Select All</span>
+                                            </CommandItem>
+                                            <CommandItem
+                                                onSelect={() => {
+                                                    setSelectedZones([])
+                                                }}
+                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                            >
+                                                <div className={cn(
+                                                    "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
+                                                    selectedZones.length === 0
+                                                        ? "bg-blue-500 text-white"
+                                                        : "opacity-50 [&_svg]:invisible"
+                                                )}>
+                                                    <Check className={cn("h-2.5 w-2.5")} />
+                                                </div>
+                                                <span className="font-bold">Unselect All</span>
+                                            </CommandItem>
+                                            <div className="h-px bg-zinc-800 my-1" />
+                                            {stationOptions.map((station) => (
+                                                <CommandItem
+                                                    key={station.value}
+                                                    value={station.value}
+                                                    onSelect={() => {
+                                                        setSelectedZones(
+                                                            selectedZones.includes(station.value)
+                                                                ? selectedZones.filter((item) => item !== station.value)
+                                                                : [...selectedZones, station.value]
+                                                        )
+                                                    }}
+                                                    className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                >
+                                                    <div className={cn(
+                                                        "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
+                                                        selectedZones.includes(station.value)
+                                                            ? "bg-blue-500 text-white"
+                                                            : "opacity-50 [&_svg]:invisible"
+                                                    )}>
+                                                        <Check className={cn("h-2.5 w-2.5")} />
+                                                    </div>
+                                                    {station.label}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+
+                        {/* Selected Zone Chips */}
+                        {selectedZones.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                                {selectedZones.map(zone => (
+                                    <div key={zone} className="flex items-center gap-1 bg-zinc-800/80 border border-zinc-700 text-[10px] text-zinc-300 px-2 py-1.5 rounded">
+                                        <span>{zone}</span>
+                                        <button
+                                            onClick={() => setSelectedZones(selectedZones.filter(z => z !== zone))}
+                                            className="hover:text-red-400 focus:outline-none transition-colors"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                                {selectedZones.length > 1 && (
+                                    <button
+                                        onClick={() => setSelectedZones([])}
+                                        className="text-[10px] text-blue-400 hover:text-blue-300 hover:underline px-1 py-1.5 transition-colors"
+                                    >
+                                        Clear all
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Status Multi-Select Combobox */}
+                        <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+                            <PopoverTrigger className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-700 transition-all shadow-sm min-w-[140px] cursor-pointer">
+                                <span className="truncate">
+                                    {selectedStatuses.length === 0
+                                        ? "Select Status"
+                                        : `${selectedStatuses.length} selected`}
+                                </span>
+                                <ChevronsUpDown className="h-4 w-4 text-zinc-500 shrink-0" />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-48 p-0 bg-[#09090b] border-zinc-800 text-white" align="start">
+                                <Command className="bg-[#09090b]">
+                                    <CommandInput placeholder="Search status..." className="text-white border-b border-zinc-800 text-xs py-2" />
+                                    <CommandList className="custom-scrollbar max-h-48">
+                                        <CommandEmpty className="py-4 text-center text-xs text-zinc-400">No status found.</CommandEmpty>
+                                        <CommandGroup>
+                                            <CommandItem
+                                                onSelect={() => {
+                                                    setSelectedStatuses(statusOptions.map(s => s.value))
+                                                }}
+                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                            >
+                                                <div className={cn(
+                                                    "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
+                                                    selectedStatuses.length === statusOptions.length
+                                                        ? "bg-blue-500 text-white"
+                                                        : "opacity-50 [&_svg]:invisible"
+                                                )}>
+                                                    <Check className={cn("h-2.5 w-2.5")} />
+                                                </div>
+                                                <span className="font-bold">Select All</span>
+                                            </CommandItem>
+                                            <CommandItem
+                                                onSelect={() => {
+                                                    setSelectedStatuses([])
+                                                }}
+                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                            >
+                                                <div className={cn(
+                                                    "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
+                                                    selectedStatuses.length === 0
+                                                        ? "bg-blue-500 text-white"
+                                                        : "opacity-50 [&_svg]:invisible"
+                                                )}>
+                                                    <Check className={cn("h-2.5 w-2.5")} />
+                                                </div>
+                                                <span className="font-bold">Unselect All</span>
+                                            </CommandItem>
+                                            <div className="h-px bg-zinc-800 my-1" />
+                                            {statusOptions.map((status) => (
+                                                <CommandItem
+                                                    key={status.value}
+                                                    value={status.value}
+                                                    onSelect={() => {
+                                                        setSelectedStatuses(
+                                                            selectedStatuses.includes(status.value)
+                                                                ? selectedStatuses.filter((item) => item !== status.value)
+                                                                : [...selectedStatuses, status.value]
+                                                        )
+                                                    }}
+                                                    className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                >
+                                                    <div className={cn(
+                                                        "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
+                                                        selectedStatuses.includes(status.value)
+                                                            ? "bg-blue-500 text-white"
+                                                            : "opacity-50 [&_svg]:invisible"
+                                                    )}>
+                                                        <Check className={cn("h-2.5 w-2.5")} />
+                                                    </div>
+                                                    {status.label}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+
+                        {/* Selected Status Chips */}
+                        {selectedStatuses.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                                {selectedStatuses.map(status => (
+                                    <div key={status} className="flex items-center gap-1 bg-zinc-800/80 border border-zinc-700 text-[10px] text-zinc-300 px-2 py-1.5 rounded">
+                                        <span>{status}</span>
+                                        <button
+                                            onClick={() => setSelectedStatuses(selectedStatuses.filter(s => s !== status))}
+                                            className="hover:text-red-400 focus:outline-none transition-colors"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                                {selectedStatuses.length > 1 && (
+                                    <button
+                                        onClick={() => setSelectedStatuses([])}
+                                        className="text-[10px] text-blue-400 hover:text-blue-300 hover:underline px-1 py-1.5 transition-colors"
+                                    >
+                                        Clear all
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-                    {stations.slice(0, 10).map((station) => {
-                        const isAlarm = station.status === "ALARM" || station.status === "Alarm";
-                        const isMaint = station.status === "Maint.";
-                        const isOffline = station.status === "Offline" || station.status === "Inactive";
+                    {filteredStations.map((station) => {
+                        const status = station.status?.toLowerCase() || ""
+                        const isAlarm = status.includes("alarm");
+                        const isMaint = status.includes("maint");
+                        const isClosed = status.includes("closed") || status === "offline" || status === "inactive";
 
-                        let colorClass = "bg-emerald-500";
+                        let colorClass = "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]";
                         let borderClass = "border-emerald-500/20";
-                        let badgeClass = "text-emerald-500 border-emerald-500/20 bg-emerald-500/10";
+                        let badgeClass = "text-emerald-400 border-emerald-500/20 bg-emerald-500/10";
                         let sparkColor = "#10b981";
 
                         if (isAlarm) {
-                            colorClass = "bg-red-500";
-                            borderClass = "border-red-500/20";
-                            badgeClass = "text-red-500 border-red-500/20 bg-red-500/10";
-                            sparkColor = "#ef4444";
+                            colorClass = "bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]";
+                            borderClass = "border-rose-500/20";
+                            badgeClass = "text-rose-400 border-rose-500/20 bg-rose-500/10";
+                            sparkColor = "#f43f5e";
                         } else if (isMaint) {
-                            colorClass = "bg-yellow-500";
-                            borderClass = "border-yellow-500/20";
-                            badgeClass = "text-yellow-500 border-yellow-500/20 bg-yellow-500/10";
+                            colorClass = "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.3)]";
+                            borderClass = "border-amber-500/20";
+                            badgeClass = "text-amber-400 border-amber-500/20 bg-amber-500/10";
                             sparkColor = "#f59e0b";
-                        } else if (isOffline) {
+                        } else if (isClosed) {
                             colorClass = "bg-zinc-600";
                             borderClass = "border-zinc-700";
                             badgeClass = "text-zinc-500 border-zinc-700 bg-zinc-800/50";
@@ -179,7 +441,7 @@ export default function Dashboard() {
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="space-y-0.5">
                                             <h4 className="font-bold text-sm tracking-tight">{station.id}</h4>
-                                            <p className="text-[10px] text-zinc-500 font-medium">SRS-HUB-05</p>
+                                            <p className="text-[10px] text-zinc-500 font-medium">SRS-NODE-{station.id.split('-')[1] || "00"}</p>
                                         </div>
                                         <span className={`text-[9px] uppercase font-black px-1.5 py-0.5 rounded border tracking-widest ${badgeClass}`}>
                                             {station.status}
@@ -194,7 +456,7 @@ export default function Dashboard() {
                                             </p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Flow</p>
+                                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Total Flow Rate</p>
                                             <p className="text-xs font-black text-zinc-100">
                                                 {station.flowRate !== null ? `${station.flowRate} \u33A5/h` : "-"}
                                             </p>
@@ -254,37 +516,44 @@ export default function Dashboard() {
                     {isAlarmFeedOpen && (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
-                                <thead className="text-[10px] uppercase font-bold text-zinc-500 bg-zinc-900/30 border-b border-zinc-800/50">
+                                <thead className="text-[10px] uppercase font-bold text-zinc-500 bg-zinc-900/50 border-b border-zinc-800/50">
                                     <tr>
-                                        <th className="px-6 py-3 tracking-widest">Time</th>
-                                        <th className="px-6 py-3 tracking-widest">Status</th>
-                                        <th className="px-6 py-3 tracking-widest">Class</th>
-                                        <th className="px-6 py-3 tracking-widest">Alarm</th>
-                                        <th className="px-6 py-3 tracking-widest">Description</th>
-                                        <th className="px-6 py-3 tracking-widest">Area</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50 whitespace-nowrap">Time</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Station ID</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Status</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Class</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Alarm</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Description</th>
+                                        <th className="px-4 py-1.5 tracking-wider">Area</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-zinc-800/50 text-zinc-300">
                                     {liveAlarms.map((alarm) => (
-                                        <tr key={alarm.id} className="hover:bg-white/[0.02] transition-colors group">
-                                            <td className="px-6 py-3 text-[11px] font-medium text-zinc-500 whitespace-nowrap">
+                                        <tr key={alarm.id} className="hover:bg-white/[0.04] transition-colors group bg-zinc-900/20">
+                                            <td className="px-4 py-1.5 text-xs font-mono text-zinc-400 whitespace-nowrap">
                                                 {alarm.time}
                                             </td>
-                                            <td className="px-6 py-3">
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black tracking-widest ${alarm.status === 'ACTIVE' ? 'bg-red-500/10 text-red-500 border border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' : 'bg-zinc-800 text-zinc-500 border border-zinc-700'}`}>
+                                            <td className="px-4 py-1.5 text-xs font-bold text-blue-500 whitespace-nowrap">
+                                                {alarm.stationId || "N/A"}
+                                            </td>
+                                            <td className="px-4 py-1.5">
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold shadow-sm ${alarm.status === 'ACTIVE'
+                                                    ? 'bg-rose-500 text-white shadow-rose-900/20'
+                                                    : 'border border-zinc-700 text-zinc-400 bg-transparent'
+                                                    }`}>
                                                     {alarm.status}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-3 text-[11px] font-bold text-purple-400">
+                                            <td className="px-4 py-1.5 text-xs text-zinc-300">
                                                 {alarm.class}
                                             </td>
-                                            <td className="px-6 py-3 text-white font-black text-xs">
+                                            <td className="px-4 py-1.5 text-xs font-medium text-white">
                                                 {alarm.alarm}
                                             </td>
-                                            <td className="px-6 py-3 text-zinc-400 text-xs truncate max-w-[400px]">
+                                            <td className="px-4 py-1.5 text-xs text-zinc-400 truncate max-w-[300px]">
                                                 {alarm.description}
                                             </td>
-                                            <td className="px-6 py-3 text-[11px] font-bold text-blue-400">
+                                            <td className="px-4 py-1.5 text-xs text-zinc-400">
                                                 {alarm.area}
                                             </td>
                                         </tr>

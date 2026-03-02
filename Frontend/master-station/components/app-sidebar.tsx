@@ -72,8 +72,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/" />}>
-              <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <Database className="size-4" />
+              <div className="flex aspect-square size-8 items-center justify-center">
+                <img src="/logo.png" alt="SRS Master Logo" className="size-8" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-bold text-lg">SRS Master</span>
