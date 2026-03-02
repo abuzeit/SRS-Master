@@ -1,0 +1,356 @@
+{
+    "stations": [
+        {
+            "id": "SRS-01",
+            "name": "Central Hub",
+            "status": "Normal",
+            "uptime": "99.9%",
+            "networkStrength": "Excellent",
+            "lastPing": "2 mins ago",
+            "activeBays": 4,
+            "totalBays": 4,
+            "flowRate": 240,
+            "trend": [
+                10,
+                15,
+                12,
+                18,
+                20,
+                25,
+                22
+            ]
+        },
+        {
+            "id": "SRS-02",
+            "name": "North Sector Node",
+            "status": "Maint.",
+            "uptime": "98.2%",
+            "networkStrength": "Fair",
+            "lastPing": "5 mins ago",
+            "activeBays": 1,
+            "totalBays": 4,
+            "flowRate": 45,
+            "trend": [
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5
+            ]
+        },
+        {
+            "id": "SRS-03",
+            "name": "East Outpost",
+            "status": "Normal",
+            "uptime": "99.5%",
+            "networkStrength": "Good",
+            "lastPing": "1 min ago",
+            "activeBays": 3,
+            "totalBays": 4,
+            "flowRate": 180,
+            "trend": [
+                20,
+                18,
+                15,
+                16,
+                22,
+                24,
+                25
+            ]
+        },
+        {
+            "id": "SRS-04",
+            "name": "West Gate",
+            "status": "ALARM",
+            "uptime": "85.4%",
+            "networkStrength": "Poor",
+            "lastPing": "1 hr ago",
+            "activeBays": 0,
+            "totalBays": 4,
+            "flowRate": 0,
+            "alarmDetail": "AC Failure - Bay 4",
+            "trend": null
+        },
+        {
+            "id": "SRS-05",
+            "name": "South Relay",
+            "status": "Normal",
+            "uptime": "99.8%",
+            "networkStrength": "Excellent",
+            "lastPing": "Just now",
+            "activeBays": 2,
+            "totalBays": 4,
+            "flowRate": 120,
+            "trend": [
+                10,
+                12,
+                11,
+                15,
+                16,
+                14,
+                15
+            ]
+        },
+        {
+            "id": "SRS-06",
+            "name": "Sector 6",
+            "status": "Normal",
+            "uptime": "99.0%",
+            "networkStrength": "Good",
+            "lastPing": "10 mins ago",
+            "activeBays": 4,
+            "totalBays": 4,
+            "flowRate": 210,
+            "trend": [
+                20,
+                22,
+                25,
+                24,
+                26,
+                28,
+                30
+            ]
+        },
+        {
+            "id": "SRS-07",
+            "name": "Sector 7",
+            "status": "Normal",
+            "uptime": "99.1%",
+            "networkStrength": "Good",
+            "lastPing": "12 mins ago",
+            "activeBays": 2,
+            "totalBays": 4,
+            "flowRate": 98,
+            "trend": [
+                8,
+                9,
+                10,
+                12,
+                11,
+                10,
+                10
+            ]
+        },
+        {
+            "id": "SRS-08",
+            "name": "Sector 8",
+            "status": "Normal",
+            "uptime": "98.9%",
+            "networkStrength": "Good",
+            "lastPing": "15 mins ago",
+            "activeBays": 1,
+            "totalBays": 4,
+            "flowRate": 50,
+            "trend": [
+                5,
+                6,
+                4,
+                5,
+                6,
+                7,
+                5
+            ]
+        },
+        {
+            "id": "SRS-09",
+            "name": "Sector 9",
+            "status": "Offline",
+            "uptime": "0.0%",
+            "networkStrength": "None",
+            "lastPing": "2 days ago",
+            "activeBays": null,
+            "totalBays": null,
+            "flowRate": null,
+            "alarmDetail": "Connection Lost",
+            "trend": null
+        },
+        {
+            "id": "SRS-10",
+            "name": "Sector 10",
+            "status": "Normal",
+            "uptime": "99.2%",
+            "networkStrength": "Excellent",
+            "lastPing": "1 min ago",
+            "activeBays": 3,
+            "totalBays": 4,
+            "flowRate": 175,
+            "trend": [
+                15,
+                16,
+                18,
+                17,
+                20,
+                22,
+                25
+            ]
+        },
+        {
+            "id": "SRS-11",
+            "name": "Sector 11",
+            "status": "Inactive",
+            "uptime": "0%",
+            "networkStrength": "None",
+            "lastPing": "N/A"
+        },
+        {
+            "id": "SRS-12",
+            "name": "Sector 12",
+            "status": "Alarm",
+            "uptime": "88%",
+            "networkStrength": "Poor",
+            "lastPing": "20 mins ago"
+        },
+        {
+            "id": "SRS-13",
+            "name": "Sector 13",
+            "status": "Inactive",
+            "uptime": "0%",
+            "networkStrength": "None",
+            "lastPing": "N/A"
+        },
+        {
+            "id": "SRS-14",
+            "name": "Sector 14",
+            "status": "Inactive",
+            "uptime": "0%",
+            "networkStrength": "None",
+            "lastPing": "N/A"
+        },
+        {
+            "id": "SRS-15",
+            "name": "Sector 15",
+            "status": "Inactive",
+            "uptime": "0%",
+            "networkStrength": "None",
+            "lastPing": "N/A"
+        }
+    ],
+    "tripLogs": [
+        {
+            "id": "TRP-1001",
+            "driver": "Alice Chen",
+            "route": "Sector 1 to Sector 4",
+            "status": "Completed",
+            "duration": "45 mins",
+            "date": "2026-03-01"
+        },
+        {
+            "id": "TRP-1002",
+            "driver": "Bob Smith",
+            "route": "Sector 2 to Sector 5",
+            "status": "In Progress",
+            "duration": "15 mins",
+            "date": "2026-03-01"
+        },
+        {
+            "id": "TRP-1003",
+            "driver": "Charlie Davis",
+            "route": "Base to Sector 3",
+            "status": "Delayed",
+            "duration": "1h 10m",
+            "date": "2026-03-01"
+        },
+        {
+            "id": "TRP-1004",
+            "driver": "Diana Prince",
+            "route": "Sector 4 to Base",
+            "status": "Completed",
+            "duration": "55 mins",
+            "date": "2026-02-28"
+        }
+    ],
+    "alarms": [
+        {
+            "id": "AL-001",
+            "severity": "Critical",
+            "description": "Network partition detected at ST-004",
+            "timestamp": "2026-03-01 21:00",
+            "status": "Open"
+        },
+        {
+            "id": "AL-002",
+            "severity": "Warning",
+            "description": "High latency on ST-002 uplink",
+            "timestamp": "2026-03-01 21:15",
+            "status": "Acknowledged"
+        },
+        {
+            "id": "AL-003",
+            "severity": "Info",
+            "description": "Scheduled maintenance for ST-001 completed",
+            "timestamp": "2026-03-01 02:00",
+            "status": "Resolved"
+        },
+        {
+            "id": "AL-004",
+            "severity": "Critical",
+            "description": "Power failure on backup generator B",
+            "timestamp": "2026-03-01 18:30",
+            "status": "In Progress"
+        }
+    ],
+    "dashboardStats": {
+        "totalVolume": {
+            "value": "45,280",
+            "unit": "m³",
+            "change": "+12.5%",
+            "changeText": "vs yesterday"
+        },
+        "activeBays": {
+            "active": 84,
+            "total": 120,
+            "utilization": 70
+        },
+        "criticalAlarms": {
+            "count": 3,
+            "stations": [
+                "SRS-04",
+                "SRS-12",
+                "SRS-29"
+            ]
+        },
+        "systemEfficiency": {
+            "value": "94.2%",
+            "trend": [
+                90,
+                92,
+                91,
+                94,
+                93,
+                95,
+                94.2
+            ]
+        }
+    },
+    "liveAlarms": [
+        {
+            "id": "LA-001",
+            "time": "01-03-2026 14:13:05",
+            "status": "ACTIVE",
+            "class": "Bay_Alarm",
+            "alarm": "AC Failure",
+            "description": "Main AC supply failure detected at distribution point",
+            "area": "Bay 4"
+        },
+        {
+            "id": "LA-002",
+            "time": "01-03-2026 14:13:00",
+            "status": "ACTIVE",
+            "class": "Bay_Alarm",
+            "alarm": "AC Failure",
+            "description": "Main AC supply failure detected at distribution point",
+            "area": "Bay 3"
+        },
+        {
+            "id": "LA-003",
+            "time": "01-03-2026 00:24:12",
+            "status": "ACK",
+            "class": "Bay_Alarm",
+            "alarm": "Bay Not Active",
+            "description": "Bay 8 Offline Signal",
+            "area": "Bay 8"
+        }
+    ]
+}
