@@ -7,6 +7,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar"
 
 import { NavbarBreadcrumb } from "./NavbarBreadcrumb"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
     return (
@@ -20,6 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             <NavbarBreadcrumb />
                         </div>
                         <div className="flex items-center gap-4">
+                            <ModeToggle />
                             <span className="text-sm text-muted-foreground mr-2">Admin User</span>
                             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
                                 A

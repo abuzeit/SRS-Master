@@ -78,13 +78,13 @@ export default function Dashboard() {
     const efficiencyData = dashboardStats.systemEfficiency.trend.map((val, i) => ({ val, index: i }))
 
     return (
-        <div className="flex flex-col p-2 lg:p-4 gap-4 max-w-[1800px] mx-auto w-full text-zinc-100 min-h-full">
+        <div className="flex flex-col p-2 lg:p-4 gap-4 max-w-[1800px] mx-auto w-full text-foreground min-h-full">
 
             {/* KPI Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 
                 {/* Total Volume */}
-                <Card className="bg-zinc-900 border-zinc-800 shadow-sm text-white overflow-hidden relative group">
+                <Card className="bg-card border-border shadow-sm text-card-foreground overflow-hidden relative group">
                     <CardContent className="p-6 flex flex-col justify-between h-[150px]">
                         <div className="flex justify-between items-start">
                             <div className="space-y-1.5">
@@ -108,7 +108,7 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Active Bays */}
-                <Card className="bg-zinc-900 border-zinc-800 shadow-sm text-white overflow-hidden relative group">
+                <Card className="bg-card border-border shadow-sm text-card-foreground overflow-hidden relative group">
                     <CardContent className="p-6 flex flex-col justify-between h-[150px]">
                         <div className="flex justify-between items-start">
                             <div className="space-y-1.5">
@@ -123,7 +123,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                         <div className="mt-auto space-y-2.5">
-                            <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
                                 <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: `${dashboardStats.activeBays.utilization}%` }} />
                             </div>
                             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{dashboardStats.activeBays.utilization}% Utilization</p>
@@ -132,7 +132,7 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Critical Alarms */}
-                <Card className="bg-zinc-900 border-zinc-800 shadow-sm text-white overflow-hidden relative group border-l-[4px] border-l-red-500">
+                <Card className="bg-card border-border shadow-sm text-card-foreground overflow-hidden relative group border-l-[4px] border-l-red-500">
                     <CardContent className="p-6 flex flex-col justify-between h-[150px]">
                         <div className="flex justify-between items-start">
                             <div className="space-y-1.5">
@@ -145,7 +145,7 @@ export default function Dashboard() {
                         </div>
                         <div className="mt-auto flex flex-col gap-1">
                             <p className="text-xs text-zinc-500">
-                                Stations: <span className="text-zinc-300 font-medium">{dashboardStats.criticalAlarms.stations.join(", ")}</span>
+                                Stations: <span className="text-foreground font-medium">{dashboardStats.criticalAlarms.stations.join(", ")}</span>
                             </p>
                             <button className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 font-bold transition-colors w-fit">
                                 Resolve Now <ArrowRight className="h-3.5 w-3.5" />
@@ -155,7 +155,7 @@ export default function Dashboard() {
                 </Card>
 
                 {/* System Efficiency */}
-                <Card className="bg-zinc-900 border-zinc-800 shadow-sm text-white overflow-hidden relative group">
+                <Card className="bg-card border-border shadow-sm text-card-foreground overflow-hidden relative group">
                     <CardContent className="p-6 flex flex-col justify-between h-[150px] relative">
                         <div className="flex justify-between items-start z-10">
                             <div className="space-y-1.5">
@@ -181,9 +181,9 @@ export default function Dashboard() {
 
             {/* Grid of Stations */}
             <div className="space-y-4 pt-4">
-                <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-zinc-800">
+                <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-border">
                     <div className="flex items-center gap-3 shrink-0">
-                        <div className="flex items-center justify-center p-1 bg-white/5 rounded-lg border border-white/10 overflow-hidden size-9">
+                        <div className="flex items-center justify-center p-1 bg-zinc-100 dark:bg-white/5 rounded-lg border border-border dark:border-white/10 overflow-hidden size-9">
                             <img src="/logo.png" alt="SRS Master" className="size-full object-contain" />
                         </div>
                         <div className="flex flex-col">
@@ -194,17 +194,17 @@ export default function Dashboard() {
                     <div className="flex gap-2 items-start">
                         {/* Zone Multi-Select Combobox */}
                         <Popover open={zoneOpen} onOpenChange={setZoneOpen}>
-                            <PopoverTrigger className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-700 transition-all shadow-sm min-w-[160px] cursor-pointer">
+                            <PopoverTrigger className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-lg hover:border-zinc-400 dark:hover:border-zinc-700 transition-all shadow-sm min-w-[160px] cursor-pointer">
                                 <span className="truncate">
                                     {selectedZones.length === 0
                                         ? "Select Station(s)"
                                         : `${selectedZones.length} selected`}
                                 </span>
-                                <ChevronsUpDown className="h-4 w-4 text-zinc-500 shrink-0" />
+                                <ChevronsUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
                             </PopoverTrigger>
-                            <PopoverContent className="w-64 p-0 bg-[#09090b] border-zinc-800 text-white" align="start">
-                                <Command className="bg-[#09090b]">
-                                    <CommandInput placeholder="Search zones..." className="text-white border-b border-zinc-800 text-xs py-2" />
+                            <PopoverContent className="w-64 p-0 bg-popover border-border text-popover-foreground" align="start">
+                                <Command className="bg-popover">
+                                    <CommandInput placeholder="Search zones..." className="text-foreground border-b border-border text-xs py-2" />
                                     <CommandList className="custom-scrollbar max-h-48">
                                         <CommandEmpty className="py-4 text-center text-xs text-zinc-400">No zone found.</CommandEmpty>
                                         <CommandGroup>
@@ -212,7 +212,7 @@ export default function Dashboard() {
                                                 onSelect={() => {
                                                     setSelectedZones(stationOptions.map(s => s.value))
                                                 }}
-                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                className="text-foreground text-xs data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer py-1.5"
                                             >
                                                 <div className={cn(
                                                     "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
@@ -228,7 +228,7 @@ export default function Dashboard() {
                                                 onSelect={() => {
                                                     setSelectedZones([])
                                                 }}
-                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                className="text-foreground text-xs data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer py-1.5"
                                             >
                                                 <div className={cn(
                                                     "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
@@ -240,7 +240,7 @@ export default function Dashboard() {
                                                 </div>
                                                 <span className="font-bold">Unselect All</span>
                                             </CommandItem>
-                                            <div className="h-px bg-zinc-800 my-1" />
+                                            <div className="h-px bg-border my-1" />
                                             {stationOptions.map((station) => (
                                                 <CommandItem
                                                     key={station.value}
@@ -252,7 +252,7 @@ export default function Dashboard() {
                                                                 : [...selectedZones, station.value]
                                                         )
                                                     }}
-                                                    className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                    className="text-foreground text-xs data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer py-1.5"
                                                 >
                                                     <div className={cn(
                                                         "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
@@ -275,7 +275,7 @@ export default function Dashboard() {
                         {selectedZones.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                                 {selectedZones.map(zone => (
-                                    <div key={zone} className="flex items-center gap-1 bg-zinc-800/80 border border-zinc-700 text-[10px] text-zinc-300 px-2 py-1.5 rounded">
+                                    <div key={zone} className="flex items-center gap-1 bg-secondary border border-border text-[10px] text-foreground px-2 py-1.5 rounded">
                                         <span>{zone}</span>
                                         <button
                                             onClick={() => setSelectedZones(selectedZones.filter(z => z !== zone))}
@@ -298,17 +298,17 @@ export default function Dashboard() {
 
                         {/* Status Multi-Select Combobox */}
                         <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-                            <PopoverTrigger className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-700 transition-all shadow-sm min-w-[140px] cursor-pointer">
+                            <PopoverTrigger className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-lg hover:border-zinc-400 dark:hover:border-zinc-700 transition-all shadow-sm min-w-[140px] cursor-pointer">
                                 <span className="truncate">
                                     {selectedStatuses.length === 0
                                         ? "Select Status"
                                         : `${selectedStatuses.length} selected`}
                                 </span>
-                                <ChevronsUpDown className="h-4 w-4 text-zinc-500 shrink-0" />
+                                <ChevronsUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
                             </PopoverTrigger>
-                            <PopoverContent className="w-48 p-0 bg-[#09090b] border-zinc-800 text-white" align="start">
-                                <Command className="bg-[#09090b]">
-                                    <CommandInput placeholder="Search status..." className="text-white border-b border-zinc-800 text-xs py-2" />
+                            <PopoverContent className="w-48 p-0 bg-popover border-border text-popover-foreground" align="start">
+                                <Command className="bg-popover">
+                                    <CommandInput placeholder="Search status..." className="text-foreground border-b border-border text-xs py-2" />
                                     <CommandList className="custom-scrollbar max-h-48">
                                         <CommandEmpty className="py-4 text-center text-xs text-zinc-400">No status found.</CommandEmpty>
                                         <CommandGroup>
@@ -316,7 +316,7 @@ export default function Dashboard() {
                                                 onSelect={() => {
                                                     setSelectedStatuses(statusOptions.map(s => s.value))
                                                 }}
-                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                className="text-foreground text-xs data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer py-1.5"
                                             >
                                                 <div className={cn(
                                                     "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
@@ -332,7 +332,7 @@ export default function Dashboard() {
                                                 onSelect={() => {
                                                     setSelectedStatuses([])
                                                 }}
-                                                className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                className="text-foreground text-xs data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer py-1.5"
                                             >
                                                 <div className={cn(
                                                     "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
@@ -344,7 +344,7 @@ export default function Dashboard() {
                                                 </div>
                                                 <span className="font-bold">Unselect All</span>
                                             </CommandItem>
-                                            <div className="h-px bg-zinc-800 my-1" />
+                                            <div className="h-px bg-border my-1" />
                                             {statusOptions.map((status) => (
                                                 <CommandItem
                                                     key={status.value}
@@ -356,7 +356,7 @@ export default function Dashboard() {
                                                                 : [...selectedStatuses, status.value]
                                                         )
                                                     }}
-                                                    className="text-zinc-300 text-xs data-[selected=true]:bg-zinc-800 data-[selected=true]:text-white focus:bg-zinc-800 focus:text-white cursor-pointer py-1.5"
+                                                    className="text-foreground text-xs data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer py-1.5"
                                                 >
                                                     <div className={cn(
                                                         "mr-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-blue-500",
@@ -379,7 +379,7 @@ export default function Dashboard() {
                         {selectedStatuses.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                                 {selectedStatuses.map(status => (
-                                    <div key={status} className="flex items-center gap-1 bg-zinc-800/80 border border-zinc-700 text-[10px] text-zinc-300 px-2 py-1.5 rounded">
+                                    <div key={status} className="flex items-center gap-1 bg-secondary border border-border text-[10px] text-foreground px-2 py-1.5 rounded">
                                         <span>{status}</span>
                                         <button
                                             onClick={() => setSelectedStatuses(selectedStatuses.filter(s => s !== status))}
@@ -434,7 +434,7 @@ export default function Dashboard() {
                         const sparkData = station.trend ? station.trend.map((val, i) => ({ val, index: i })) : [];
 
                         return (
-                            <Card key={station.id} className="bg-zinc-900 border-zinc-800 shadow-sm text-white overflow-hidden group hover:border-zinc-700 transition-all">
+                            <Card key={station.id} className="bg-card border-border shadow-sm text-card-foreground overflow-hidden group hover:border-zinc-400 dark:hover:border-zinc-700 transition-all">
                                 <CardContent className="p-5 flex flex-col h-[160px] relative">
                                     <div className={`absolute top-0 left-0 right-0 h-1 ${colorClass}`} />
 
@@ -451,13 +451,13 @@ export default function Dashboard() {
                                     <div className="grid grid-cols-2 gap-3 mb-4">
                                         <div className="space-y-1">
                                             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Bays</p>
-                                            <p className="text-xs font-black text-zinc-100">
+                                            <p className="text-xs font-black text-foreground">
                                                 {station.activeBays !== null ? `${station.activeBays} / ${station.totalBays}` : "-"}
                                             </p>
                                         </div>
                                         <div className="space-y-1">
                                             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Total Flow Rate</p>
-                                            <p className="text-xs font-black text-zinc-100">
+                                            <p className="text-xs font-black text-foreground">
                                                 {station.flowRate !== null ? `${station.flowRate} \u33A5/h` : "-"}
                                             </p>
                                         </div>
@@ -491,22 +491,22 @@ export default function Dashboard() {
 
             {/* Live Alarm Feed */}
             <div className="pt-4 pb-4">
-                <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900 shadow-xl">
-                    <div className="px-6 py-4 border-b border-zinc-800 flex items-center gap-3 bg-zinc-900/50">
+                <div className="border border-border rounded-xl overflow-hidden bg-card shadow-xl">
+                    <div className="px-6 py-4 border-b border-border flex items-center gap-3 bg-card/50">
                         <div className="bg-red-500/10 p-2 rounded-lg border border-red-500/20">
                             <Bell className="h-4 w-4 text-red-500" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold tracking-widest text-white uppercase">Critical Alarm Feed</h3>
+                            <h3 className="text-sm font-bold tracking-widest text-card-foreground uppercase">Critical Alarm Feed</h3>
                             <p className="text-[10px] text-zinc-500 font-medium">Real-time system alerts and critical failures</p>
                         </div>
                         <div className="ml-auto flex items-center gap-2">
-                            <Link href="/alarms" className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-xl transition-all" title="Expand View">
+                            <Link href="/alarms" className="p-2 text-zinc-500 hover:text-foreground hover:bg-secondary rounded-xl transition-all" title="Expand View">
                                 <Maximize2 className="h-4 w-4" />
                             </Link>
                             <button
                                 onClick={() => setIsAlarmFeedOpen(!isAlarmFeedOpen)}
-                                className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                                className="p-2 text-zinc-500 hover:text-foreground hover:bg-secondary rounded-xl transition-all"
                             >
                                 {isAlarmFeedOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                             </button>
@@ -516,20 +516,20 @@ export default function Dashboard() {
                     {isAlarmFeedOpen && (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
-                                <thead className="text-[10px] uppercase font-bold text-zinc-500 bg-zinc-900/50 border-b border-zinc-800/50">
+                                <thead className="text-[10px] uppercase font-bold text-zinc-500 bg-secondary/50 border-b border-border">
                                     <tr>
-                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50 whitespace-nowrap">Time</th>
-                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Station ID</th>
-                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Status</th>
-                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Class</th>
-                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Alarm</th>
-                                        <th className="px-4 py-1.5 tracking-wider border-r border-zinc-800/50">Description</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-border whitespace-nowrap">Time</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-border">Station ID</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-border">Status</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-border">Class</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-border">Alarm</th>
+                                        <th className="px-4 py-1.5 tracking-wider border-r border-border">Description</th>
                                         <th className="px-4 py-1.5 tracking-wider">Area</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-zinc-800/50 text-zinc-300">
+                                <tbody className="divide-y divide-border text-muted-foreground">
                                     {liveAlarms.map((alarm) => (
-                                        <tr key={alarm.id} className="hover:bg-white/[0.04] transition-colors group bg-zinc-900/20">
+                                        <tr key={alarm.id} className="hover:bg-accent transition-colors group bg-card/20">
                                             <td className="px-4 py-1.5 text-xs font-mono text-zinc-400 whitespace-nowrap">
                                                 {alarm.time}
                                             </td>
@@ -539,21 +539,21 @@ export default function Dashboard() {
                                             <td className="px-4 py-1.5">
                                                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold shadow-sm ${alarm.status === 'ACTIVE'
                                                     ? 'bg-rose-500 text-white shadow-rose-900/20'
-                                                    : 'border border-zinc-700 text-zinc-400 bg-transparent'
+                                                    : 'border border-border text-muted-foreground bg-transparent'
                                                     }`}>
                                                     {alarm.status}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-1.5 text-xs text-zinc-300">
+                                            <td className="px-4 py-1.5 text-xs text-muted-foreground">
                                                 {alarm.class}
                                             </td>
-                                            <td className="px-4 py-1.5 text-xs font-medium text-white">
+                                            <td className="px-4 py-1.5 text-xs font-medium text-foreground">
                                                 {alarm.alarm}
                                             </td>
-                                            <td className="px-4 py-1.5 text-xs text-zinc-400 truncate max-w-[300px]">
+                                            <td className="px-4 py-1.5 text-xs text-muted-foreground truncate max-w-[300px]">
                                                 {alarm.description}
                                             </td>
-                                            <td className="px-4 py-1.5 text-xs text-zinc-400">
+                                            <td className="px-4 py-1.5 text-xs text-muted-foreground">
                                                 {alarm.area}
                                             </td>
                                         </tr>

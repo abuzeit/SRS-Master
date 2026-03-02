@@ -93,7 +93,7 @@ export default function ComparePage() {
     }
 
     const getVarianceColor = (valA: number, valB: number, higherIsBetter = true) => {
-        if (valA === valB) return "text-zinc-500"
+        if (valA === valB) return "text-muted-foreground"
         if (higherIsBetter) return valA > valB ? "text-emerald-500" : "text-rose-500"
         return valA < valB ? "text-emerald-500" : "text-rose-500"
     }
@@ -128,14 +128,14 @@ export default function ComparePage() {
     }
 
     return (
-        <div className="flex flex-col p-2 lg:p-4 gap-4 max-w-[1800px] mx-auto w-full text-zinc-100">
+        <div className="flex flex-col p-2 lg:p-4 gap-4 max-w-[1800px] mx-auto w-full text-foreground bg-background min-h-screen">
             {/* Header & Selectors */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-2">
                 <div>
                     <motion.h1
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="text-2xl font-bold tracking-tight text-white"
+                        className="text-2xl font-bold tracking-tight text-foreground"
                     >
                         Station Comparison
                     </motion.h1>
@@ -143,27 +143,27 @@ export default function ComparePage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-zinc-500 mt-1 text-xs max-w-2xl"
+                        className="text-muted-foreground mt-1 text-xs max-w-2xl"
                     >
                         Compare real-time metrics and historical performance data between two receiving stations side-by-side.
                     </motion.p>
                 </div>
-                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-[#09090b] p-1.5 rounded-xl border border-zinc-800 shadow-2xl w-full md:w-auto overflow-hidden">
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-card p-1.5 rounded-xl border border-border shadow-2xl w-full md:w-auto overflow-hidden">
                     {/* Station A Selector */}
                     <div className="flex flex-col flex-grow sm:flex-grow-0">
                         <Popover open={openA} onOpenChange={setOpenA}>
-                            <PopoverTrigger className="flex flex-col items-start px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all text-left min-w-[180px] group border-none bg-transparent">
-                                <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest leading-none mb-1.5 group-hover:text-zinc-400">Station A</span>
+                            <PopoverTrigger className="flex flex-col items-start px-3 py-1.5 rounded-lg hover:bg-accent transition-all text-left min-w-[180px] group border-none bg-transparent">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest leading-none mb-1.5 group-hover:text-foreground">Station A</span>
                                 <div className="flex items-center justify-between w-full gap-2">
-                                    <span className="text-sm font-bold text-white truncate">{stationA.id} <span className="text-zinc-500 font-medium ml-1">({stationA.name})</span></span>
-                                    <ChevronsUpDown className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
+                                    <span className="text-sm font-bold text-foreground truncate">{stationA.id} <span className="text-muted-foreground font-medium ml-1">({stationA.name})</span></span>
+                                    <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[240px] p-0 bg-[#09090b] border-zinc-800 shadow-2xl z-50" align="start">
-                                <Command className="bg-[#09090b] text-white border-none">
+                            <PopoverContent className="w-[240px] p-0 bg-card border-border shadow-2xl z-50" align="start">
+                                <Command className="bg-card text-foreground border-none">
                                     <CommandInput placeholder="Search station..." className="h-9 text-xs border-none focus:ring-0" />
                                     <CommandList className="max-h-[300px] custom-scrollbar overflow-y-auto">
-                                        <CommandEmpty className="py-6 text-center text-xs text-zinc-500 italic">No station found.</CommandEmpty>
+                                        <CommandEmpty className="py-6 text-center text-xs text-muted-foreground italic">No station found.</CommandEmpty>
                                         <CommandGroup>
                                             {mockData.stations.map((s) => (
                                                 <CommandItem
@@ -173,7 +173,7 @@ export default function ComparePage() {
                                                         setStationAId(s.id)
                                                         setOpenA(false)
                                                     }}
-                                                    className="flex items-center justify-between px-3 py-2 text-xs text-zinc-400 aria-selected:bg-zinc-800 aria-selected:text-white cursor-pointer"
+                                                    className="flex items-center justify-between px-3 py-2 text-xs text-muted-foreground aria-selected:bg-accent aria-selected:text-foreground cursor-pointer"
                                                 >
                                                     <div className="flex flex-col">
                                                         <span className="font-bold">{s.id}</span>
@@ -189,7 +189,7 @@ export default function ComparePage() {
                         </Popover>
                     </div>
 
-                    <div className="h-10 w-px bg-zinc-800/80 mx-1 hidden sm:block"></div>
+                    <div className="h-10 w-px bg-border/80 mx-1 hidden sm:block"></div>
 
                     <motion.button
                         animate={{ rotate: rotation }}
@@ -205,23 +205,23 @@ export default function ComparePage() {
                         </svg>
                     </motion.button>
 
-                    <div className="h-10 w-px bg-zinc-800/80 mx-1 hidden sm:block"></div>
+                    <div className="h-10 w-px bg-border/80 mx-1 hidden sm:block"></div>
 
                     {/* Station B Selector */}
                     <div className="flex flex-col flex-grow sm:flex-grow-0 text-right">
                         <Popover open={openB} onOpenChange={setOpenB}>
-                            <PopoverTrigger className="flex flex-col items-end px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all text-right min-w-[180px] group border-none bg-transparent">
-                                <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest leading-none mb-1.5 group-hover:text-zinc-400">Station B</span>
+                            <PopoverTrigger className="flex flex-col items-end px-3 py-1.5 rounded-lg hover:bg-accent transition-all text-right min-w-[180px] group border-none bg-transparent">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest leading-none mb-1.5 group-hover:text-foreground">Station B</span>
                                 <div className="flex items-center justify-end w-full gap-2">
-                                    <ChevronsUpDown className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
-                                    <span className="text-sm font-bold text-white truncate">{stationB.id} <span className="text-zinc-500 font-medium ml-1">({stationB.name})</span></span>
+                                    <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                    <span className="text-sm font-bold text-foreground truncate">{stationB.id} <span className="text-muted-foreground font-medium ml-1">({stationB.name})</span></span>
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[240px] p-0 bg-[#09090b] border-zinc-800 shadow-2xl z-50" align="end">
-                                <Command className="bg-[#09090b] text-white border-none">
+                            <PopoverContent className="w-[240px] p-0 bg-card border-border shadow-2xl z-50" align="end">
+                                <Command className="bg-card text-foreground border-none">
                                     <CommandInput placeholder="Search station..." className="h-9 text-xs border-none focus:ring-0" />
                                     <CommandList className="max-h-[300px] custom-scrollbar overflow-y-auto">
-                                        <CommandEmpty className="py-6 text-center text-xs text-zinc-500 italic">No station found.</CommandEmpty>
+                                        <CommandEmpty className="py-6 text-center text-xs text-muted-foreground italic">No station found.</CommandEmpty>
                                         <CommandGroup>
                                             {mockData.stations.map((s) => (
                                                 <CommandItem
@@ -231,7 +231,7 @@ export default function ComparePage() {
                                                         setStationBId(s.id)
                                                         setOpenB(false)
                                                     }}
-                                                    className="flex items-center justify-between px-3 py-2 text-xs text-zinc-400 aria-selected:bg-zinc-800 aria-selected:text-white cursor-pointer"
+                                                    className="flex items-center justify-between px-3 py-2 text-xs text-muted-foreground aria-selected:bg-accent aria-selected:text-foreground cursor-pointer"
                                                 >
                                                     <div className="flex flex-col">
                                                         <span className="font-bold">{s.id}</span>
@@ -252,7 +252,7 @@ export default function ComparePage() {
             {/* Main Grid: Row-based for perfect alignment */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_120px_1fr] gap-4 lg:gap-x-8 lg:gap-y-8 items-stretch relative">
                 {/* Visual Connector: Middle vertical line */}
-                <div className="absolute inset-y-0 left-1/2 w-px bg-gradient-to-b from-transparent via-zinc-800 to-transparent -translate-x-1/2 -z-10 hidden lg:block" style={{ gridColumn: 2 }}></div>
+                <div className="absolute inset-y-0 left-1/2 w-px bg-gradient-to-b from-transparent via-border to-transparent -translate-x-1/2 -z-10 hidden lg:block" style={{ gridColumn: 2 }}></div>
 
                 {/* --- ROW 1: HEADERS (Sticky) --- */}
                 {/* Station A Header */}
@@ -262,9 +262,9 @@ export default function ComparePage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className={`sticky top-[88px] z-30 transition-all duration-300 rounded-xl border border-zinc-800 relative overflow-hidden group ${scrolled
-                            ? "bg-[#18181b]/95 backdrop-blur-md shadow-2xl py-2 px-4 ring-1 ring-zinc-700/50"
-                            : "bg-[#18181b] p-4"
+                        className={`sticky top-[88px] z-30 transition-all duration-300 rounded-xl border border-border relative overflow-hidden group ${scrolled
+                            ? "bg-card/95 backdrop-blur-md shadow-2xl py-2 px-4 ring-1 ring-border/50"
+                            : "bg-card p-4 shadow-sm"
                             }`}
                     >
                         <div className={`absolute top-0 left-0 w-1 bg-${getStatusColor(stationA.status)}-500 h-full opacity-100`}></div>
@@ -275,38 +275,38 @@ export default function ComparePage() {
                                         <span className={`flex h-1.5 w-1.5 rounded-full bg-${getStatusColor(stationA.status)}-500 ${stationA.status.toLowerCase().includes('maint') ? 'animate-pulse' : ''}`}></span>
                                         <span className={`text-${getStatusColor(stationA.status)}-500 font-bold uppercase tracking-wider transition-all ${scrolled ? "text-[8px]" : "text-[10px]"}`}>{stationA.status}</span>
                                     </div>
-                                    <h3 className={`font-bold text-white tracking-tight transition-all duration-300 ${scrolled ? "text-lg" : "text-2xl"}`}>{stationA.id}</h3>
-                                    {!scrolled && <p className="text-xs text-zinc-500 transition-opacity duration-200">{stationA.name} • Uptime: {stationA.uptime}</p>}
+                                    <h3 className={`font-bold text-foreground tracking-tight transition-all duration-300 ${scrolled ? "text-lg" : "text-2xl"}`}>{stationA.id}</h3>
+                                    {!scrolled && <p className="text-xs text-muted-foreground transition-opacity duration-200">{stationA.name} • Uptime: {stationA.uptime}</p>}
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-4 mr-2">
                                     {scrollTier >= 1 && (
                                         <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col items-end">
-                                            <span className="text-[8px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Total Flow Rate</span>
-                                            <span className="text-sm font-bold text-white leading-none">{stationA.flowRate || 0}<span className="text-[8px] font-normal text-zinc-500 ml-0.5">m³/h</span></span>
+                                            <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest leading-none mb-1">Total Flow Rate</span>
+                                            <span className="text-sm font-bold text-foreground leading-none">{stationA.flowRate || 0}<span className="text-[8px] font-normal text-muted-foreground ml-0.5">m³/h</span></span>
                                         </motion.div>
                                     )}
                                     {scrollTier >= 2 && (
                                         <>
-                                            <div className="h-6 w-px bg-zinc-800/50" />
+                                            <div className="h-6 w-px bg-border/50" />
                                             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col items-end">
-                                                <span className="text-[8px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Average pH</span>
-                                                <span className="text-sm font-bold text-white leading-none tracking-tight">{stationA.ph || "--"}</span>
+                                                <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest leading-none mb-1">Average pH</span>
+                                                <span className="text-sm font-bold text-foreground leading-none tracking-tight">{stationA.ph || "--"}</span>
                                             </motion.div>
                                         </>
                                     )}
                                     {scrollTier >= 3 && (
                                         <>
-                                            <div className="h-6 w-px bg-zinc-800/50" />
+                                            <div className="h-6 w-px bg-border/50" />
                                             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col items-end">
-                                                <span className="text-[8px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Average Conductivity</span>
-                                                <span className="text-sm font-bold text-white leading-none tracking-tight">{stationA.conductivity || "--"}</span>
+                                                <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest leading-none mb-1">Average Conductivity</span>
+                                                <span className="text-sm font-bold text-foreground leading-none tracking-tight">{stationA.conductivity || "--"}</span>
                                             </motion.div>
                                         </>
                                     )}
                                 </div>
-                                <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-white/5 text-zinc-500 transition-colors">
+                                <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent text-muted-foreground transition-colors">
                                     <MoreHorizontal className="w-4 h-4" />
                                 </button>
                             </div>
@@ -316,8 +316,8 @@ export default function ComparePage() {
 
                 {/* Variance Label Header */}
                 <div className={`sticky top-[88px] z-20 flex flex-col items-center justify-center transition-all duration-300`}>
-                    <div className={`flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm rounded-full px-3 py-1 ring-1 ring-zinc-800 transition-all ${scrolled ? "opacity-100 scale-90" : "opacity-50"}`}>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 whitespace-nowrap">Variance</span>
+                    <div className={`flex items-center justify-center bg-muted/50 backdrop-blur-sm rounded-full px-3 py-1 ring-1 ring-border transition-all ${scrolled ? "opacity-100 scale-90" : "opacity-50"}`}>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">Variance</span>
                     </div>
                 </div>
 
@@ -328,9 +328,9 @@ export default function ComparePage() {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className={`sticky top-[88px] z-30 transition-all duration-300 rounded-xl border border-zinc-800 relative overflow-hidden group ${scrolled
-                            ? "bg-[#18181b]/95 backdrop-blur-md shadow-2xl py-2 px-4 ring-1 ring-zinc-700/50"
-                            : "bg-[#18181b] p-4"
+                        className={`sticky top-[88px] z-30 transition-all duration-300 rounded-xl border border-border relative overflow-hidden group ${scrolled
+                            ? "bg-card/95 backdrop-blur-md shadow-2xl py-2 px-4 ring-1 ring-border/50"
+                            : "bg-card p-4 shadow-sm"
                             }`}
                     >
                         <div className={`absolute top-0 left-0 w-1 bg-${getStatusColor(stationB.status)}-500 h-full opacity-100`}></div>
@@ -341,38 +341,38 @@ export default function ComparePage() {
                                         <span className={`flex h-1.5 w-1.5 rounded-full bg-${getStatusColor(stationB.status)}-500 ${stationB.status.toLowerCase().includes('maint') ? 'animate-pulse' : ''}`}></span>
                                         <span className={`text-${getStatusColor(stationB.status)}-500 font-bold uppercase tracking-wider transition-all ${scrolled ? "text-[8px]" : "text-[10px]"}`}>{stationB.status}</span>
                                     </div>
-                                    <h3 className={`font-bold text-white tracking-tight transition-all duration-300 ${scrolled ? "text-lg" : "text-2xl"}`}>{stationB.id}</h3>
-                                    {!scrolled && <p className="text-xs text-zinc-500 transition-opacity duration-200">{stationB.name} • Uptime: {stationB.uptime}</p>}
+                                    <h3 className={`font-bold text-foreground tracking-tight transition-all duration-300 ${scrolled ? "text-lg" : "text-2xl"}`}>{stationB.id}</h3>
+                                    {!scrolled && <p className="text-xs text-muted-foreground transition-opacity duration-200">{stationB.name} • Uptime: {stationB.uptime}</p>}
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-4 mr-2">
                                     {scrollTier >= 1 && (
                                         <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col items-end">
-                                            <span className="text-[8px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Total Flow Rate</span>
-                                            <span className="text-sm font-bold text-white leading-none">{stationB.flowRate || 0}<span className="text-[8px] font-normal text-zinc-500 ml-0.5">m³/h</span></span>
+                                            <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest leading-none mb-1">Total Flow Rate</span>
+                                            <span className="text-sm font-bold text-foreground leading-none">{stationB.flowRate || 0}<span className="text-[8px] font-normal text-muted-foreground ml-0.5">m³/h</span></span>
                                         </motion.div>
                                     )}
                                     {scrollTier >= 2 && (
                                         <>
-                                            <div className="h-6 w-px bg-zinc-800/50" />
+                                            <div className="h-6 w-px bg-border/50" />
                                             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col items-end">
-                                                <span className="text-[8px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Average pH</span>
-                                                <span className="text-sm font-bold text-white leading-none tracking-tight">{stationB.ph || "--"}</span>
+                                                <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest leading-none mb-1">Average pH</span>
+                                                <span className="text-sm font-bold text-foreground leading-none tracking-tight">{stationB.ph || "--"}</span>
                                             </motion.div>
                                         </>
                                     )}
                                     {scrollTier >= 3 && (
                                         <>
-                                            <div className="h-6 w-px bg-zinc-800/50" />
+                                            <div className="h-6 w-px bg-border/50" />
                                             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col items-end">
-                                                <span className="text-[8px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Average Conductivity</span>
-                                                <span className="text-sm font-bold text-white leading-none tracking-tight">{stationB.conductivity || "--"}</span>
+                                                <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest leading-none mb-1">Average Conductivity</span>
+                                                <span className="text-sm font-bold text-foreground leading-none tracking-tight">{stationB.conductivity || "--"}</span>
                                             </motion.div>
                                         </>
                                     )}
                                 </div>
-                                <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-white/5 text-zinc-500 transition-colors">
+                                <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent text-muted-foreground transition-colors">
                                     <MoreHorizontal className="w-4 h-4" />
                                 </button>
                             </div>
@@ -385,15 +385,15 @@ export default function ComparePage() {
                 <motion.div
                     layout
                     key={`side-A-${stationA.id}-flow`}
-                    className="bg-[#18181b] rounded-xl p-5 border border-zinc-800 flex flex-col items-center justify-center relative min-h-[220px]"
+                    className="bg-card rounded-xl p-5 border border-border flex flex-col items-center justify-center relative min-h-[220px]"
                 >
-                    <div className="absolute top-4 left-4 flex items-center gap-2 text-zinc-500">
+                    <div className="absolute top-4 left-4 flex items-center gap-2 text-muted-foreground">
                         <Droplets className="w-4 h-4" />
                         <h4 className="text-sm font-medium">Current Total Flow Rate</h4>
                     </div>
                     <div className="relative w-48 h-48 flex items-center justify-center mt-4">
                         <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                            <path className="text-white/5" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5"></path>
+                            <path className="text-muted/20" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5"></path>
                             <motion.path
                                 initial={{ strokeDasharray: "0, 100" }}
                                 animate={{ strokeDasharray: `${Math.min((stationA.flowRate || 0) / 5, 100)}, 100` }}
@@ -411,11 +411,11 @@ export default function ComparePage() {
                                 key={stationA.flowRate}
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="text-3xl font-bold text-white tracking-tighter"
+                                className="text-3xl font-bold text-foreground tracking-tighter"
                             >
                                 {stationA.flowRate || 0}
                             </motion.span>
-                            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mt-1">m³/h</span>
+                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mt-1">m³/h</span>
                         </div>
                     </div>
                 </motion.div>
@@ -426,7 +426,7 @@ export default function ComparePage() {
                         key={`${stationA.id}-${stationB.id}-flow-var`}
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={`bg-[#18181b] rounded-full py-1.5 px-4 text-sm font-bold ${getVarianceColor(stationA.flowRate || 0, stationB.flowRate || 0)} ring-1 ring-zinc-800 shadow-xl flex items-center gap-2 z-10 transition-transform hover:scale-110 cursor-default`}
+                        className={`bg-card rounded-full py-1.5 px-4 text-sm font-bold ${getVarianceColor(stationA.flowRate || 0, stationB.flowRate || 0)} ring-1 ring-border shadow-xl flex items-center gap-2 z-10 transition-transform hover:scale-110 cursor-default`}
                     >
                         {(stationA.flowRate || 0) > (stationB.flowRate || 0) ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
                         {calculateVariance(stationA.flowRate || 0, stationB.flowRate || 0)}
@@ -437,15 +437,15 @@ export default function ComparePage() {
                 <motion.div
                     layout
                     key={`side-B-${stationB.id}-flow`}
-                    className="bg-[#18181b] rounded-xl p-5 border border-zinc-800 flex flex-col items-center justify-center relative min-h-[220px]"
+                    className="bg-card rounded-xl p-5 border border-border flex flex-col items-center justify-center relative min-h-[220px]"
                 >
-                    <div className="absolute top-4 left-4 flex items-center gap-2 text-zinc-500">
+                    <div className="absolute top-4 left-4 flex items-center gap-2 text-muted-foreground">
                         <Droplets className="w-4 h-4" />
                         <h4 className="text-sm font-medium">Current Total Flow Rate</h4>
                     </div>
                     <div className="relative w-48 h-48 flex items-center justify-center mt-4">
                         <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                            <path className="text-white/5" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5"></path>
+                            <path className="text-muted/20" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5"></path>
                             <motion.path
                                 initial={{ strokeDasharray: "0, 100" }}
                                 animate={{ strokeDasharray: `${Math.min((stationB.flowRate || 0) / 5, 100)}, 100` }}
@@ -463,30 +463,30 @@ export default function ComparePage() {
                                 key={stationB.flowRate}
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="text-3xl font-bold text-white tracking-tighter"
+                                className="text-3xl font-bold text-foreground tracking-tighter"
                             >
                                 {stationB.flowRate || 0}
                             </motion.span>
-                            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mt-1">m³/h</span>
+                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mt-1">m³/h</span>
                         </div>
                     </div>
                 </motion.div>
 
                 {/* --- ROW 3: pH LEVEL --- */}
-                <motion.div key={`side-A-${stationA.id}-ph`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] p-6 rounded-xl border border-zinc-800 flex justify-between items-center group transition-colors">
+                <motion.div key={`side-A-${stationA.id}-ph`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card p-6 rounded-xl border border-border flex justify-between items-center group transition-colors shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className={cn(
                             "h-10 w-10 rounded-lg flex items-center justify-center transition-all",
                             getStatusColor(stationA.status) === 'emerald' ? "bg-emerald-500/10 text-emerald-500" :
                                 getStatusColor(stationA.status) === 'rose' ? "bg-rose-500/10 text-rose-500" :
                                     getStatusColor(stationA.status) === 'amber' ? "bg-amber-500/10 text-amber-500" :
-                                        "bg-zinc-500/10 text-zinc-500"
+                                        "bg-muted text-muted-foreground"
                         )}>
                             <FlaskConical className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Average pH</span>
-                            <div className="text-2xl font-bold text-white tracking-tight">{stationA.ph || "--"}</div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Average pH</span>
+                            <div className="text-2xl font-bold text-foreground tracking-tight">{stationA.ph || "--"}</div>
                         </div>
                     </div>
                     <span className={cn(
@@ -494,7 +494,7 @@ export default function ComparePage() {
                         getStatusColor(stationA.status) === 'emerald' ? "text-emerald-500 bg-emerald-500/10" :
                             getStatusColor(stationA.status) === 'rose' ? "text-rose-500 bg-rose-500/10" :
                                 getStatusColor(stationA.status) === 'amber' ? "text-amber-500 bg-amber-500/10" :
-                                    "text-zinc-500 bg-zinc-500/10"
+                                    "text-muted-foreground bg-muted"
                     )}>
                         {(stationA.ph || 7) < 7 ? "Acidic" : (stationA.ph || 7) > 7.5 ? "Alkaline" : "Normal"}
                     </span>
@@ -506,27 +506,27 @@ export default function ComparePage() {
                         key={`${stationA.id}-${stationB.id}-ph-var`}
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-[#18181b] rounded-full py-1 px-3 text-xs font-bold text-zinc-500 ring-1 ring-zinc-800 shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default"
+                        className="bg-card rounded-full py-1 px-3 text-xs font-bold text-muted-foreground ring-1 ring-border shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default"
                     >
                         {(stationA.ph || 0) === (stationB.ph || 0) ? <Minus className="w-3.5 h-3.5" /> : (stationA.ph || 0) > (stationB.ph || 0) ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />}
                         {calculateVariance(stationA.ph || 0, stationB.ph || 0)}
                     </motion.div>
                 </div>
 
-                <motion.div key={`side-B-${stationB.id}-ph`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] p-6 rounded-xl border border-zinc-800 flex justify-between items-center group transition-colors">
+                <motion.div key={`side-B-${stationB.id}-ph`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card p-6 rounded-xl border border-border flex justify-between items-center group transition-colors shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className={cn(
                             "h-10 w-10 rounded-lg flex items-center justify-center transition-all",
                             getStatusColor(stationB.status) === 'emerald' ? "bg-emerald-500/10 text-emerald-500" :
                                 getStatusColor(stationB.status) === 'rose' ? "bg-rose-500/10 text-rose-500" :
                                     getStatusColor(stationB.status) === 'amber' ? "bg-amber-500/10 text-amber-500" :
-                                        "bg-zinc-500/10 text-zinc-500"
+                                        "bg-muted text-muted-foreground"
                         )}>
                             <FlaskConical className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Average pH</span>
-                            <div className="text-2xl font-bold text-white tracking-tight">{stationB.ph || "--"}</div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Average pH</span>
+                            <div className="text-2xl font-bold text-foreground tracking-tight">{stationB.ph || "--"}</div>
                         </div>
                     </div>
                     <span className={cn(
@@ -534,24 +534,24 @@ export default function ComparePage() {
                         getStatusColor(stationB.status) === 'emerald' ? "text-emerald-500 bg-emerald-500/10" :
                             getStatusColor(stationB.status) === 'rose' ? "text-rose-500 bg-rose-500/10" :
                                 getStatusColor(stationB.status) === 'amber' ? "text-amber-500 bg-amber-500/10" :
-                                    "text-zinc-500 bg-zinc-500/10"
+                                    "text-muted-foreground bg-muted"
                     )}>
                         {(stationB.ph || 7) < 7 ? "Acidic" : (stationB.ph || 7) > 7.5 ? "Alkaline" : "Normal"}
                     </span>
                 </motion.div>
 
                 {/* --- ROW 4: CONDUCTIVITY --- */}
-                <motion.div key={`side-A-${stationA.id}-cond`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] p-6 rounded-xl border border-zinc-800 flex justify-between items-center group hover:border-[#13a4ec]/20 transition-colors">
+                <motion.div key={`side-A-${stationA.id}-cond`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card p-6 rounded-xl border border-border flex justify-between items-center group hover:border-[#13a4ec]/20 transition-colors shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-lg bg-[#13a4ec]/10 flex items-center justify-center text-[#13a4ec] group-hover:bg-[#13a4ec] group-hover:text-black transition-all">
                             <Zap className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Average Conductivity</span>
-                            <div className="text-2xl font-bold text-white tracking-tight">{stationA.conductivity || "--"} <span className="text-[10px] text-zinc-500 ml-1">µS/cm</span></div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Average Conductivity</span>
+                            <div className="text-2xl font-bold text-foreground tracking-tight">{stationA.conductivity || "--"} <span className="text-[10px] text-muted-foreground ml-1">µS/cm</span></div>
                         </div>
                     </div>
-                    <div className="h-2 w-16 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-2 w-16 bg-muted rounded-full overflow-hidden">
                         <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((stationA.conductivity || 0) / 20, 100)}%` }} className="h-full bg-[#13a4ec]" />
                     </div>
                 </motion.div>
@@ -562,36 +562,36 @@ export default function ComparePage() {
                         key={`${stationA.id}-${stationB.id}-cond-var`}
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={`bg-[#18181b] rounded-full py-1 px-3 text-xs font-bold ${getVarianceColor(stationA.conductivity || 0, stationB.conductivity || 0, false)} ring-1 ring-zinc-800 shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default`}
+                        className={`bg-card rounded-full py-1 px-3 text-xs font-bold ${getVarianceColor(stationA.conductivity || 0, stationB.conductivity || 0, false)} ring-1 ring-border shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default`}
                     >
                         {(stationA.conductivity || 0) > (stationB.conductivity || 0) ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />}
                         {calculateVariance(stationA.conductivity || 0, stationB.conductivity || 0)}
                     </motion.div>
                 </div>
 
-                <motion.div key={`side-B-${stationB.id}-cond`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] p-6 rounded-xl border border-zinc-800 flex justify-between items-center group hover:border-[#13a4ec]/20 transition-colors">
+                <motion.div key={`side-B-${stationB.id}-cond`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card p-6 rounded-xl border border-border flex justify-between items-center group hover:border-[#13a4ec]/20 transition-colors shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-lg bg-[#13a4ec]/10 flex items-center justify-center text-[#13a4ec] group-hover:bg-[#13a4ec] group-hover:text-black transition-all">
                             <Zap className="w-5 h-5" />
                         </div>
                         <div>
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Average Conductivity</span>
-                            <div className="text-2xl font-bold text-white tracking-tight">{stationB.conductivity || "--"} <span className="text-[10px] text-zinc-500 ml-1">µS/cm</span></div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Average Conductivity</span>
+                            <div className="text-2xl font-bold text-foreground tracking-tight">{stationB.conductivity || "--"} <span className="text-[10px] text-muted-foreground ml-1">µS/cm</span></div>
                         </div>
                     </div>
-                    <div className="h-2 w-16 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-2 w-16 bg-muted rounded-full overflow-hidden">
                         <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((stationB.conductivity || 0) / 20, 100)}%` }} className="h-full bg-[#13a4ec]" />
                     </div>
                 </motion.div>
 
                 {/* --- ROW 5: TOTAL OPERATIONS --- */}
-                <motion.div key={`side-A-${stationA.id}-ops`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] p-6 rounded-xl border border-zinc-800">
+                <motion.div key={`side-A-${stationA.id}-ops`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card p-6 rounded-xl border border-border shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
-                            <Truck className="text-zinc-500 w-5 h-5" />
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Operations (24h)</span>
+                            <Truck className="text-muted-foreground w-5 h-5" />
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Operations (24h)</span>
                         </div>
-                        <div className="text-2xl font-bold text-white tracking-tight">{extraA.operations}</div>
+                        <div className="text-2xl font-bold text-foreground tracking-tight">{extraA.operations}</div>
                     </div>
                     <div className="h-8 flex gap-1.5 items-end mb-2">
                         {extraA.opsTrend.map((h, i) => (
@@ -605,7 +605,7 @@ export default function ComparePage() {
                     </div>
                     <div className="flex justify-between px-0.5">
                         {['12 AM', '6 AM', '12 PM', '6 PM', '11 PM'].map((time, i) => (
-                            <span key={`lbl-A-${i}`} className="text-[8px] font-bold text-zinc-600 uppercase tracking-tighter">{time}</span>
+                            <span key={`lbl-A-${i}`} className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-tighter">{time}</span>
                         ))}
                     </div>
                 </motion.div>
@@ -616,20 +616,20 @@ export default function ComparePage() {
                         key={`${stationA.id}-${stationB.id}-ops-var`}
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={`bg-[#18181b] rounded-full py-1 px-3 text-xs font-bold ${getVarianceColor(extraA.operations, extraB.operations)} ring-1 ring-zinc-800 shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default`}
+                        className={`bg-card rounded-full py-1 px-3 text-xs font-bold ${getVarianceColor(extraA.operations, extraB.operations)} ring-1 ring-border shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default`}
                     >
                         {extraA.operations > extraB.operations ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />}
                         {calculateVariance(extraA.operations, extraB.operations)}
                     </motion.div>
                 </div>
 
-                <motion.div key={`side-B-${stationB.id}-ops`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] p-6 rounded-xl border border-zinc-800">
+                <motion.div key={`side-B-${stationB.id}-ops`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card p-6 rounded-xl border border-border shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
-                            <Truck className="text-zinc-500 w-5 h-5" />
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Total Operations (24h)</span>
+                            <Truck className="text-muted-foreground w-5 h-5" />
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Operations (24h)</span>
                         </div>
-                        <div className="text-2xl font-bold text-white tracking-tight">{extraB.operations}</div>
+                        <div className="text-2xl font-bold text-foreground tracking-tight">{extraB.operations}</div>
                     </div>
                     <div className="h-8 flex gap-1.5 items-end mb-2">
                         {extraB.opsTrend.map((h, i) => {
@@ -637,7 +637,7 @@ export default function ComparePage() {
                             const barClass = statusColor === 'emerald' ? 'bg-emerald-500/20 hover:bg-emerald-500/50' :
                                 statusColor === 'rose' ? 'bg-rose-500/20 hover:bg-rose-500/50' :
                                     statusColor === 'amber' ? 'bg-amber-500/20 hover:bg-amber-500/50' :
-                                        'bg-zinc-500/20 hover:bg-zinc-500/50'
+                                        'bg-muted hover:bg-muted/80'
 
                             return (
                                 <motion.div
@@ -651,27 +651,27 @@ export default function ComparePage() {
                     </div>
                     <div className="flex justify-between px-0.5">
                         {['12 AM', '6 AM', '12 PM', '6 PM', '11 PM'].map((time, i) => (
-                            <span key={`lbl-B-${i}`} className="text-[8px] font-bold text-zinc-600 uppercase tracking-tighter">{time}</span>
+                            <span key={`lbl-B-${i}`} className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-tighter">{time}</span>
                         ))}
                     </div>
                 </motion.div>
 
                 {/* --- ROW 6: DISCHARGE VOLUME --- */}
-                <motion.div key={`side-A-${stationA.id}-discharge`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] rounded-xl p-5 border border-zinc-800">
-                    <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-6">Discharge Volume (7 Days)</h4>
+                <motion.div key={`side-A-${stationA.id}-discharge`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card rounded-xl p-5 border border-border shadow-sm">
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-6">Discharge Volume (7 Days)</h4>
                     <div className="h-24 flex items-end gap-2.5 justify-between mb-2">
                         {extraA.dischargeTrend.map((h, i) => (
                             <motion.div
                                 key={i}
                                 initial={{ height: 0 }}
                                 animate={{ height: `${h}%` }}
-                                className={`flex-1 rounded-sm ${i === 4 ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-white/5"}`}
+                                className={`flex-1 rounded-sm ${i === 4 ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-muted/40"}`}
                             ></motion.div>
                         ))}
                     </div>
                     <div className="flex justify-between px-1">
                         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                            <span key={day} className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">{day}</span>
+                            <span key={day} className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wider">{day}</span>
                         ))}
                     </div>
                 </motion.div>
@@ -681,22 +681,22 @@ export default function ComparePage() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-[#18181b] rounded-full py-1 px-3 text-xs font-bold text-emerald-500 ring-1 ring-zinc-800 shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default"
+                        className="bg-card rounded-full py-1 px-3 text-xs font-bold text-emerald-500 ring-1 ring-border shadow-xl flex items-center gap-1.5 z-10 transition-transform hover:scale-110 cursor-default"
                     >
                         <ArrowUp className="w-3.5 h-3.5" />
                         15%
                     </motion.div>
                 </div>
 
-                <motion.div key={`side-B-${stationB.id}-discharge`} initial="hidden" animate="visible" variants={itemVariants} className="bg-[#18181b] rounded-xl p-5 border border-zinc-800">
-                    <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-6">Discharge Volume (7 Days)</h4>
+                <motion.div key={`side-B-${stationB.id}-discharge`} initial="hidden" animate="visible" variants={itemVariants} className="bg-card rounded-xl p-5 border border-border shadow-sm">
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-6">Discharge Volume (7 Days)</h4>
                     <div className="h-24 flex items-end gap-2.5 justify-between mb-2">
                         {extraB.dischargeTrend.map((h, i) => {
                             const statusColor = getStatusColor(stationB.status)
                             const barColor = statusColor === 'emerald' ? 'bg-emerald-500' :
                                 statusColor === 'rose' ? 'bg-rose-500' :
                                     statusColor === 'amber' ? 'bg-amber-500' :
-                                        'bg-zinc-500'
+                                        'bg-muted-foreground'
 
                             const glowColor = statusColor === 'emerald' ? 'rgba(16,185,129,0.3)' :
                                 statusColor === 'rose' ? 'rgba(244,63,94,0.3)' :
@@ -708,14 +708,14 @@ export default function ComparePage() {
                                     key={`dis-B-${i}-${stationB.id}`}
                                     initial={{ height: 0 }}
                                     animate={{ height: `${h}%` }}
-                                    className={`flex-1 rounded-sm ${i === 4 ? `${barColor} shadow-[0_0_10px_${glowColor}]` : "bg-white/5"}`}
+                                    className={`flex-1 rounded-sm ${i === 4 ? `${barColor} shadow-[0_0_10px_${glowColor}]` : "bg-muted/40"}`}
                                 ></motion.div>
                             )
                         })}
                     </div>
                     <div className="flex justify-between px-1">
                         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                            <span key={day} className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">{day}</span>
+                            <span key={day} className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wider">{day}</span>
                         ))}
                     </div>
                 </motion.div>
@@ -728,36 +728,36 @@ export default function ComparePage() {
                     layout
                     key={`side-A-${stationA.id}-logs`}
                     initial="hidden" animate="visible" variants={containerVariants}
-                    className="bg-[#18181b] rounded-xl border border-zinc-800 overflow-hidden shadow-sm"
+                    className="bg-card rounded-xl border border-border overflow-hidden shadow-sm"
                 >
-                    <div className="px-4 py-2.5 border-b border-zinc-800 flex justify-between items-center bg-white/[0.02]">
-                        <h3 className="font-semibold text-sm text-white">{stationA.id} Latest Logs</h3>
-                        <button className="text-xs font-medium text-zinc-500 hover:text-[#13a4ec] transition-colors flex items-center gap-1">
+                    <div className="px-4 py-2.5 border-b border-border flex justify-between items-center bg-muted/20">
+                        <h3 className="font-semibold text-sm text-foreground">{stationA.id} Latest Logs</h3>
+                        <button className="text-xs font-medium text-muted-foreground hover:text-[#13a4ec] transition-colors flex items-center gap-1">
                             View All <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
-                            <thead className="text-xs uppercase text-zinc-500 bg-white/[0.02] border-b border-zinc-800">
+                            <thead className="text-xs uppercase text-muted-foreground bg-muted/20 border-b border-border">
                                 <tr>
                                     <th className="px-4 py-2 font-medium tracking-wider w-32">Time</th>
                                     <th className="px-4 py-2 font-medium tracking-wider">Event</th>
                                     <th className="px-4 py-2 font-medium tracking-wider text-right">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-zinc-800">
+                            <tbody className="divide-y divide-border">
                                 {extraA.logs.map((log, idx) => (
-                                    <motion.tr variants={itemVariants} key={idx} className="hover:bg-white/[0.02] transition-colors text-xs">
-                                        <td className="px-4 py-1.5 text-white font-mono">{log.time}</td>
-                                        <td className="px-4 py-1.5 text-zinc-300">{log.event}</td>
+                                    <motion.tr variants={itemVariants} key={idx} className="hover:bg-muted/10 transition-colors text-xs">
+                                        <td className="px-4 py-1.5 text-foreground font-mono">{log.time}</td>
+                                        <td className="px-4 py-1.5 text-muted-foreground">{log.event}</td>
                                         <td className="px-4 py-1.5 text-right">
                                             <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-medium border ${log.type === 'success' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
                                                 log.type === 'warning' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                                    'bg-white/5 text-zinc-500 border-white/10'
+                                                    'bg-muted text-muted-foreground border-border'
                                                 }`}>
                                                 <span className={`w-1 h-1 rounded-full ${log.type === 'success' ? 'bg-emerald-500' :
                                                     log.type === 'warning' ? 'bg-amber-500' :
-                                                        'bg-zinc-400'
+                                                        'bg-muted-foreground'
                                                     }`}></span>
                                                 {log.status}
                                             </span>
@@ -774,36 +774,36 @@ export default function ComparePage() {
                     layout
                     key={`side-B-${stationB.id}-logs`}
                     initial="hidden" animate="visible" variants={containerVariants}
-                    className="bg-[#18181b] rounded-xl border border-zinc-800 overflow-hidden shadow-sm"
+                    className="bg-card rounded-xl border border-border overflow-hidden shadow-sm"
                 >
-                    <div className="px-4 py-2.5 border-b border-zinc-800 flex justify-between items-center bg-white/[0.02]">
-                        <h3 className="font-semibold text-sm text-white">{stationB.id} Latest Logs</h3>
-                        <button className="text-xs font-medium text-zinc-500 hover:text-[#13a4ec] transition-colors flex items-center gap-1">
+                    <div className="px-4 py-2.5 border-b border-border flex justify-between items-center bg-muted/20">
+                        <h3 className="font-semibold text-sm text-foreground">{stationB.id} Latest Logs</h3>
+                        <button className="text-xs font-medium text-muted-foreground hover:text-[#13a4ec] transition-colors flex items-center gap-1">
                             View All <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
-                            <thead className="text-xs uppercase text-zinc-500 bg-white/[0.02] border-b border-zinc-800">
+                            <thead className="text-xs uppercase text-muted-foreground bg-muted/20 border-b border-border">
                                 <tr>
                                     <th className="px-4 py-2 font-medium tracking-wider w-32">Time</th>
                                     <th className="px-4 py-2 font-medium tracking-wider">Event</th>
                                     <th className="px-4 py-2 font-medium tracking-wider text-right">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-zinc-800">
+                            <tbody className="divide-y divide-border">
                                 {extraB.logs.map((log, idx) => (
-                                    <motion.tr variants={itemVariants} key={idx} className="hover:bg-white/[0.02] transition-colors text-xs">
-                                        <td className="px-4 py-1.5 text-white font-mono">{log.time}</td>
-                                        <td className="px-4 py-1.5 text-zinc-300">{log.event}</td>
+                                    <motion.tr variants={itemVariants} key={idx} className="hover:bg-muted/10 transition-colors text-xs">
+                                        <td className="px-4 py-1.5 text-foreground font-mono">{log.time}</td>
+                                        <td className="px-4 py-1.5 text-muted-foreground">{log.event}</td>
                                         <td className="px-4 py-1.5 text-right">
                                             <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-medium border ${log.type === 'success' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
                                                 log.type === 'warning' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                                    'bg-white/5 text-zinc-500 border-white/10'
+                                                    'bg-muted text-muted-foreground border-border'
                                                 }`}>
                                                 <span className={`w-1 h-1 rounded-full ${log.type === 'success' ? 'bg-emerald-500' :
                                                     log.type === 'warning' ? 'bg-amber-500' :
-                                                        'bg-zinc-400'
+                                                        'bg-muted-foreground'
                                                     }`}></span>
                                                 {log.status}
                                             </span>
